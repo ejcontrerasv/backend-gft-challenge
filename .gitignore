@@ -1,0 +1,40 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+
+# Kotlin
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test output
+test-output/
+
+# Local configuration
+*.local
+.env
+.env.local
+
+# Testcontainers
+.testcontainers/
