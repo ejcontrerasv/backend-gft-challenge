@@ -21,10 +21,6 @@ sealed class ValidationResult {
     data class Invalid(val errors: List<String>) : ValidationResult()
 
     fun isValid(): Boolean = this is Valid
-    fun getErrors(): List<String> = when (this) {
-        is Invalid -> errors
-        is Valid -> emptyList()
-    }
 }
 
 /**
