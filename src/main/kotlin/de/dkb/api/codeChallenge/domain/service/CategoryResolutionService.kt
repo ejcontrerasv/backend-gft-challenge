@@ -31,9 +31,7 @@ interface CategoryResolutionService {
 /**
  * Default implementation of CategoryResolutionService
  */
-class DefaultCategoryResolutionService(
-    private val categoryConfigRepository: CategoryConfigRepository
-) : CategoryResolutionService {
+class DefaultCategoryResolutionService(private val categoryConfigRepository: CategoryConfigRepository) : CategoryResolutionService {
 
     override fun resolveCategoryByTypeCode(typeCode: String): NotificationCategory? {
         val normalizedCode = typeCode.trim().lowercase()
@@ -60,7 +58,5 @@ class DefaultCategoryResolutionService(
         return categories
     }
 
-    override fun isValidTypeCode(typeCode: String): Boolean {
-        return resolveCategoryByTypeCode(typeCode) != null
-    }
+    override fun isValidTypeCode(typeCode: String): Boolean = resolveCategoryByTypeCode(typeCode) != null
 }

@@ -868,6 +868,43 @@ migration:
 
 ---
 
+## Developer Tooling
+
+### API Documentation (Swagger/OpenAPI)
+
+The project includes comprehensive API documentation using SpringDoc OpenAPI.
+
+**Access Points:**
+- **Swagger UI**: `http://localhost:8080/swagger-ui.html`
+- **OpenAPI JSON**: `http://localhost:8080/v3/api-docs`
+
+**Features:**
+- Interactive API testing
+- Request/response schemas with examples
+- Endpoint descriptions and response codes
+
+### Code Formatting (Spotless + ktlint)
+
+Consistent code formatting is enforced using Spotless with ktlint.
+
+**Commands:**
+```bash
+# Check formatting (runs automatically on build)
+./gradlew spotlessCheck
+
+# Auto-fix formatting issues
+./gradlew spotlessApply
+```
+
+**Configuration:**
+- Indent: 4 spaces
+- Max line length: 150 characters
+- Kotlin official style guide
+
+**Note:** Build will fail if code is not properly formatted.
+
+---
+
 ## Conclusion
 
 This implementation successfully addresses the notification problem by:

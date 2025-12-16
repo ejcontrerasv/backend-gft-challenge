@@ -20,7 +20,7 @@ private val logger = KotlinLogging.logger {}
 class RegisterUserUseCase(
     private val userRepository: UserRepository,
     private val categoryResolutionService: CategoryResolutionService,
-    private val subscriptionValidator: SubscriptionValidator
+    private val subscriptionValidator: SubscriptionValidator,
 ) {
 
     fun execute(command: RegisterUserCommand): UserRegistrationResult {
@@ -34,7 +34,7 @@ class RegisterUserUseCase(
                 logger.warn { "No valid categories found for user ${command.userId.value}" }
                 return UserRegistrationResult.Failure(
                     userId = command.userId,
-                    errors = listOf("No valid notification types provided")
+                    errors = listOf("No valid notification types provided"),
                 )
             }
 
@@ -44,7 +44,7 @@ class RegisterUserUseCase(
                 logger.warn { "Validation failed for user ${command.userId.value}: $errors" }
                 return UserRegistrationResult.Failure(
                     userId = command.userId,
-                    errors = errors
+                    errors = errors,
                 )
             }
 
@@ -52,13 +52,13 @@ class RegisterUserUseCase(
                 CategorySubscription(
                     category = category,
                     subscribedAt = Instant.now(),
-                    active = true
+                    active = true,
                 )
             }.toSet()
 
             val user = User(
                 id = command.userId,
-                subscriptions = subscriptions
+                subscriptions = subscriptions,
             )
 
             userRepository.save(user)
@@ -67,14 +67,13 @@ class RegisterUserUseCase(
 
             return UserRegistrationResult.Success(
                 userId = command.userId,
-                subscribedCategories = categories.map { it.id.value }.toSet()
+                subscribedCategories = categories.map { it.id.value }.toSet(),
             )
-
         } catch (e: Exception) {
             logger.error(e) { "Failed to register user ${command.userId.value}" }
             return UserRegistrationResult.Failure(
                 userId = command.userId,
-                errors = listOf("Registration failed: ${e.message}")
+                errors = listOf("Registration failed: ${e.message}"),
             )
         }
     }

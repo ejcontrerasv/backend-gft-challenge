@@ -15,7 +15,7 @@ object UserSubscriptionMapper {
     fun toDomain(
         userId: UUID,
         subscriptionEntities: List<UserSubscriptionEntity>,
-        categoryMap: Map<String, NotificationCategory>
+        categoryMap: Map<String, NotificationCategory>,
     ): User {
         val subscriptions = subscriptionEntities.mapNotNull { entity ->
             val category = categoryMap[entity.categoryId]
@@ -23,7 +23,7 @@ object UserSubscriptionMapper {
                 CategorySubscription(
                     category = category,
                     subscribedAt = entity.subscribedAt,
-                    active = entity.active
+                    active = entity.active,
                 )
             } else {
                 null
@@ -32,18 +32,16 @@ object UserSubscriptionMapper {
 
         return User(
             id = UserId(userId),
-            subscriptions = subscriptions
+            subscriptions = subscriptions,
         )
     }
 
-    fun toEntities(user: User): List<UserSubscriptionEntity> {
-        return user.subscriptions.map { subscription ->
-            UserSubscriptionEntity(
-                userId = user.id.value,
-                categoryId = subscription.category.id.value,
-                subscribedAt = subscription.subscribedAt,
-                active = subscription.active
-            )
-        }
+    fun toEntities(user: User): List<UserSubscriptionEntity> = user.subscriptions.map { subscription ->
+        UserSubscriptionEntity(
+            userId = user.id.value,
+            categoryId = subscription.category.id.value,
+            subscribedAt = subscription.subscribedAt,
+            active = subscription.active,
+        )
     }
 }

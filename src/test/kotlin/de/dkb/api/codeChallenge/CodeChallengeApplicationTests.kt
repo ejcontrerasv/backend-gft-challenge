@@ -11,23 +11,21 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @SpringBootTest
 class CodeChallengeApplicationTests {
 
-	companion object {
-		@Container
-		val postgres = PostgreSQLContainer("postgres:15")
+    companion object {
+        @Container
+        val postgres = PostgreSQLContainer("postgres:15")
 
-		@JvmStatic
-		@DynamicPropertySource
-		@Suppress("unused", "UsePropertyAccessSyntax")
-		fun registerPgProperties(registry: org.springframework.test.context.DynamicPropertyRegistry) {
-			registry.add("spring.datasource.url", postgres::getJdbcUrl)
-			registry.add("spring.datasource.username", postgres::getUsername)
-			registry.add("spring.datasource.password", postgres::getPassword)
-		}
-	}
+        @JvmStatic
+        @DynamicPropertySource
+        @Suppress("unused", "UsePropertyAccessSyntax")
+        fun registerPgProperties(registry: org.springframework.test.context.DynamicPropertyRegistry) {
+            registry.add("spring.datasource.url", postgres::getJdbcUrl)
+            registry.add("spring.datasource.username", postgres::getUsername)
+            registry.add("spring.datasource.password", postgres::getPassword)
+        }
+    }
 
-
-	@Test
-	fun contextLoads() {
-	}
-
+    @Test
+    fun contextLoads() {
+    }
 }

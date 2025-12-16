@@ -20,7 +20,7 @@ private val logger = KotlinLogging.logger {}
 @Component
 class UserRepositoryAdapter(
     private val userSubscriptionJpaRepository: UserSubscriptionJpaRepository,
-    private val categoryConfigRepository: CategoryConfigRepository
+    private val categoryConfigRepository: CategoryConfigRepository,
 ) : UserRepository {
 
     override fun findById(id: UserId): User? {
@@ -53,13 +53,9 @@ class UserRepositoryAdapter(
         }
     }
 
-    override fun existsById(id: UserId): Boolean {
-        return userSubscriptionJpaRepository.findByUserId(id.value).isNotEmpty()
-    }
+    override fun existsById(id: UserId): Boolean = userSubscriptionJpaRepository.findByUserId(id.value).isNotEmpty()
 
-    override fun count(): Long {
-        return userSubscriptionJpaRepository.findAll().map { it.userId }.distinct().size.toLong()
-    }
+    override fun count(): Long = userSubscriptionJpaRepository.findAll().map { it.userId }.distinct().size.toLong()
 
     override fun findAll(): List<User> {
         val allSubscriptions = userSubscriptionJpaRepository.findAll()

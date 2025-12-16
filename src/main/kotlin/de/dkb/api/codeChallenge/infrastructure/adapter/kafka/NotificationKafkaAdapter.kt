@@ -15,9 +15,7 @@ private val logger = KotlinLogging.logger {}
  * Maintains compatibility with existing Kafka infrastructure.
  */
 @Component
-class NotificationKafkaAdapter(
-    private val sendNotificationUseCase: SendNotificationUseCase
-) {
+class NotificationKafkaAdapter(private val sendNotificationUseCase: SendNotificationUseCase) {
 
     /**
      * Consume notification messages from Kafka topic.
@@ -26,7 +24,7 @@ class NotificationKafkaAdapter(
     @KafkaListener(
         topics = ["notifications"],
         groupId = "codechallenge_group",
-        autoStartup = "\${kafka.listener.enabled:false}"
+        autoStartup = "\${kafka.listener.enabled:false}",
     )
     fun consumeNotification(message: NotificationKafkaMessage) {
         logger.info { "Kafka: Received notification message for user ${message.userId}" }
@@ -35,7 +33,7 @@ class NotificationKafkaAdapter(
             val command = SendNotificationCommand.from(
                 userId = message.userId,
                 type = message.notificationType,
-                message = message.message
+                message = message.message,
             )
 
             sendNotificationUseCase.execute(command)

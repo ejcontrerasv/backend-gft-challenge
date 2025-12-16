@@ -6,8 +6,4 @@ import java.util.UUID
  * Kafka message DTO for notification events.
  * Maintains compatibility with existing Kafka message format.
  */
-data class NotificationKafkaMessage(
-    val userId: UUID,
-    val notificationType: String,
-    val message: String
-)
+data class NotificationKafkaMessage(val userId: UUID, val notificationType: String, val message: String)

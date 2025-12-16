@@ -27,5 +27,7 @@ interface NotificationTypeJpaRepository : JpaRepository<NotificationTypeEntity, 
      * Find category by type code
      */
     @Query("SELECT t.category FROM NotificationTypeEntity t WHERE t.code = :typeCode")
-    fun findCategoryByTypeCode(@Param("typeCode") typeCode: String): de.dkb.api.codeChallenge.infrastructure.persistence.jpa.entity.NotificationCategoryEntity?
+    fun findCategoryByTypeCode(
+        @Param("typeCode") typeCode: String,
+    ): de.dkb.api.codeChallenge.infrastructure.persistence.jpa.entity.NotificationCategoryEntity?
 }

@@ -14,7 +14,7 @@ enum class LegacyNotificationType {
     type2,
     type3,
     type4,
-    type5
+    type5,
 }
 
 /**
@@ -45,4 +45,3 @@ class LegacyNotificationTypeSetConverter : AttributeConverter<MutableSet<LegacyN
             .toMutableSet()
     }
 }
-

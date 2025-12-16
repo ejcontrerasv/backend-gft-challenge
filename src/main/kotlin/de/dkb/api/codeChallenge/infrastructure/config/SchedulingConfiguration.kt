@@ -13,6 +13,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @ConditionalOnProperty(
     name = ["migration.batch-job.enabled"],
     havingValue = "true",
-    matchIfMissing = false
+    matchIfMissing = false,
 )
 class SchedulingConfiguration

@@ -8,15 +8,9 @@ import org.springframework.context.annotation.Configuration
  */
 @Configuration
 @ConfigurationProperties(prefix = "migration")
-data class MigrationProperties(
-    var dualWrite: DualWriteConfig = DualWriteConfig(),
-    var batchJob: BatchJobConfig = BatchJobConfig()
-)
+data class MigrationProperties(var dualWrite: DualWriteConfig = DualWriteConfig(), var batchJob: BatchJobConfig = BatchJobConfig())
 
-data class DualWriteConfig(
-    var enabled: Boolean = true,
-    var readSource: ReadSource = ReadSource.NEW_WITH_FALLBACK
-)
+data class DualWriteConfig(var enabled: Boolean = true, var readSource: ReadSource = ReadSource.NEW_WITH_FALLBACK)
 
 enum class ReadSource {
     /**
@@ -32,11 +26,7 @@ enum class ReadSource {
     /**
      * Read only from legacy schema (rollback scenario)
      */
-    LEGACY_ONLY
+    LEGACY_ONLY,
 }
 
-data class BatchJobConfig(
-    var enabled: Boolean = false,
-    var batchSize: Int = 1000,
-    var cron: String = "0 0 2 * * ?" // 2 AM daily
-)
+data class BatchJobConfig(var enabled: Boolean = false, var batchSize: Int = 1000, var cron: String = "0 0 2 * * ?")
