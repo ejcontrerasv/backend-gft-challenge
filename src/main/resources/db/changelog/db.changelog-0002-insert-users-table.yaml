@@ -6,6 +6,7 @@ databaseChangeLog:
   - changeSet:
       id: "0002-create-uuid-ossp-extension"
       author: ""
+      dbms: postgresql
       changes:
         - sql:
             sql: "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
@@ -15,6 +16,7 @@ databaseChangeLog:
   - changeSet:
       id: "0002-insert-users-data"
       author: ""
+      dbms: postgresql
       changes:
         - insert:
             tableName: "users"
@@ -69,8 +71,7 @@ databaseChangeLog:
                   valueComputed: ${uuid_function}
               - column:
                   name: "notifications"
-                  value:
-                    "type4"
+                  value: "type4"
         - insert:
             tableName: "users"
             columns:
@@ -79,8 +80,7 @@ databaseChangeLog:
                   valueComputed: ${uuid_function}
               - column:
                   name: "notifications"
-                  value:
-                    "type4"
+                  value: "type4"
         - insert:
             tableName: "users"
             columns:
@@ -89,8 +89,7 @@ databaseChangeLog:
                   valueComputed: ${uuid_function}
               - column:
                   name: "notifications"
-                  value:
-                    "type4;type5"
+                  value: "type4;type5"
         - insert:
             tableName: "users"
             columns:
@@ -99,8 +98,7 @@ databaseChangeLog:
                   valueComputed: ${uuid_function}
               - column:
                   name: "notifications"
-                  value:
-                    "type4;type5"
+                  value: "type4;type5"
         - insert:
             tableName: "users"
             columns:
@@ -109,8 +107,7 @@ databaseChangeLog:
                   valueComputed: ${uuid_function}
               - column:
                   name: "notifications"
-                  value:
-                    "type1;type4"
+                  value: "type1;type4"
         - insert:
             tableName: "users"
             columns:
@@ -119,8 +116,7 @@ databaseChangeLog:
                   valueComputed: ${uuid_function}
               - column:
                   name: "notifications"
-                  value:
-                    "type1;type2;type4"
+                  value: "type1;type2;type4"
         - insert:
             tableName: "users"
             columns:
@@ -129,8 +125,7 @@ databaseChangeLog:
                   valueComputed: ${uuid_function}
               - column:
                   name: "notifications"
-                  value:
-                    "type1;type2;type4;type5"
+                  value: "type1;type2;type4;type5"
         - insert:
             tableName: "users"
             columns:
@@ -139,8 +134,7 @@ databaseChangeLog:
                   valueComputed: ${uuid_function}
               - column:
                   name: "notifications"
-                  value:
-                    "type1;type2;type3;type4"
+                  value: "type1;type2;type3;type4"
         - insert:
             tableName: "users"
             columns:
@@ -149,8 +143,7 @@ databaseChangeLog:
                   valueComputed: ${uuid_function}
               - column:
                   name: "notifications"
-                  value:
-                    "type1;type2;type3;type4;type5"
+                  value: "type1;type2;type3;type4;type5"
       rollback:
         - delete:
             tableName: "users"

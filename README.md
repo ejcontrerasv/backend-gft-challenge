@@ -39,3 +39,18 @@ This project uses [Spotless](https://github.com/diffplug/spotless) with [ktlint]
 ```
 
 **Note:** The build will fail if code is not properly formatted. Run `spotlessApply` before committing.
+
+### JaCoCo (Code Coverage)
+Code coverage is measured using [JaCoCo](https://www.jacoco.org/jacoco/).
+
+```bash
+# Run tests with coverage report
+./gradlew test jacocoTestReport
+
+# Verify coverage thresholds
+./gradlew jacocoTestCoverageVerification
+```
+
+**Reports:** Open `build/reports/jacoco/test/html/index.html` in your browser.
+
+

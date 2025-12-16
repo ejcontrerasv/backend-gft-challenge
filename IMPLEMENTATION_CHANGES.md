@@ -903,6 +903,47 @@ Consistent code formatting is enforced using Spotless with ktlint.
 
 **Note:** Build will fail if code is not properly formatted.
 
+### Code Coverage (JaCoCo)
+
+Code coverage is measured using JaCoCo with minimum thresholds enforced.
+
+**Commands:**
+```bash
+# Run tests with coverage report
+./gradlew test jacocoTestReport
+
+# Verify coverage thresholds
+./gradlew jacocoTestCoverageVerification
+```
+
+**Reports:**
+- HTML Report: `build/reports/jacoco/test/html/index.html`
+- XML Report: `build/reports/jacoco/test/jacocoTestReport.xml`
+
+**Coverage Thresholds:**
+- Overall instruction coverage: 50% minimum
+- Domain & Application layers: 70% line coverage minimum
+
+**Test Structure:**
+```
+src/test/kotlin/
+├── domain/
+│   ├── model/
+│   │   ├── UserTest.kt
+│   │   └── NotificationCategoryTest.kt
+│   └── service/
+│       ├── CategoryResolutionServiceTest.kt
+│       ├── LegacyDataMigratorTest.kt
+│       └── SubscriptionValidatorTest.kt
+├── application/
+│   └── usecase/
+│       ├── RegisterUserUseCaseTest.kt
+│       └── SendNotificationUseCaseTest.kt
+└── infrastructure/
+    └── adapter/rest/
+        └── NotificationRestControllerTest.kt
+```
+
 ---
 
 ## Conclusion
