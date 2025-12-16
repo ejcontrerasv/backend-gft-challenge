@@ -47,76 +47,76 @@ Category B: type4, type5
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     EXTERNAL ACTORS                         │
-│  (REST Clients, Kafka Consumers, Admin Tools)              │
+│  (REST Clients, Kafka Consumers, Admin Tools)               │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                   ADAPTERS (Driving Side)                   │
-│  ┌──────────────────┐  ┌──────────────────┐               │
-│  │ REST Controllers │  │ Kafka Listeners  │               │
-│  │  - /register     │  │  - consume()     │               │
-│  │  - /notify       │  └──────────────────┘               │
+│  ┌──────────────────┐  ┌──────────────────┐                 │
+│  │ REST Controllers │  │ Kafka Listeners  │                 │
+│  │  - /register     │  │  - consume()     │                 │
+│  │  - /notify       │  └──────────────────┘                 │
 │  └──────────────────┘                                       │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    APPLICATION LAYER                        │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              Use Cases (Ports - Input)               │  │
-│  │  - RegisterUserUseCase                               │  │
-│  │  - SendNotificationUseCase                           │  │
-│  │  - MigrateUserSubscriptionsUseCase                   │  │
-│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │              Use Cases (Ports - Input)               │   │
+│  │  - RegisterUserUseCase                               │   │
+│  │  - SendNotificationUseCase                           │   │
+│  │  - MigrateUserSubscriptionsUseCase                   │   │
+│  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                      DOMAIN LAYER                           │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │           Domain Entities                          │    │
-│  │  - User (Aggregate Root)                           │    │
-│  │  - NotificationCategory                            │    │
-│  │  - NotificationType                                │    │
-│  │  - CategorySubscription                            │    │
-│  └────────────────────────────────────────────────────┘    │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │           Domain Services                          │    │
-│  │  - CategoryResolutionService                       │    │
-│  │  - SubscriptionValidator                           │    │
-│  │  - LegacyDataMigrator                              │    │
-│  └────────────────────────────────────────────────────┘    │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │           Repository Interfaces (Output Ports)     │    │
-│  │  - UserRepository                                  │    │
-│  │  - CategoryConfigRepository                        │    │
-│  │  - NotificationGateway                             │    │
-│  └────────────────────────────────────────────────────┘    │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │           Domain Entities                          │     │
+│  │  - User (Aggregate Root)                           │     │
+│  │  - NotificationCategory                            │     │
+│  │  - NotificationType                                │     │
+│  │  - CategorySubscription                            │     │
+│  └────────────────────────────────────────────────────┘     │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │           Domain Services                          │     │
+│  │  - CategoryResolutionService                       │     │
+│  │  - SubscriptionValidator                           │     │
+│  │  - LegacyDataMigrator                              │     │
+│  └────────────────────────────────────────────────────┘     │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │           Repository Interfaces (Output Ports)     │     │
+│  │  - UserRepository                                  │     │
+│  │  - CategoryConfigRepository                        │     │
+│  │  - NotificationGateway                             │     │
+│  └────────────────────────────────────────────────────┘     │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                INFRASTRUCTURE LAYER                         │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │            Adapters (Driven Side)                    │  │
-│  │  ┌─────────────────┐  ┌───────────────────────────┐ │  │
-│  │  │ JPA Repositories│  │ External Config Client    │ │  │
-│  │  │  - UserJpa...   │  │  - Spring Cloud Config    │ │  │
-│  │  └─────────────────┘  │  - or Config Service      │ │  │
-│  │                       └───────────────────────────┘ │  │
-│  │  ┌─────────────────┐  ┌───────────────────────────┐ │  │
-│  │  │ Push Notification│  │ Database (PostgreSQL)     │ │  │
-│  │  │  Service         │  │  - users_subscriptions    │ │  │
-│  │  └─────────────────┘  │  - notification_categories│ │  │
-│  │                       └───────────────────────────┘ │  │
-│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │            Adapters (Driven Side)                    │   │
+│  │  ┌─────────────────┐  ┌───────────────────────────┐  │   │
+│  │  │ JPA Repositories│  │ External Config Client    │  │   │
+│  │  │  - UserJpa...   │  │  - Spring Cloud Config    │  │   │
+│  │  └─────────────────┘  │  - or Config Service      │  │   │
+│  │                       └───────────────────────────┘  │   │
+│  │  ┌──────────────────┐  ┌───────────────────────────┐ │   │
+│  │  │ Push Notification│  │ Database (PostgreSQL)     │ │   │
+│  │  │  Service         │  │  - users_subscriptions    │ │   │
+│  │  └──────────────────┘  │  - notification_categories│ │   │
+│  │                        └───────────────────────────┘ │   │
+│  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                   EXTERNAL SYSTEMS                          │
-│  (Config Server, Database, Push Services, Monitoring)      │
+│  (Config Server, Database, Push Services, Monitoring)       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -807,11 +807,11 @@ class NotificationMetrics(
 
 This architecture proposal provides a robust, scalable, and maintainable solution for the notification system. By adopting **Hexagonal Architecture** and **externalized configuration**, we achieve:
 
-✅ **Zero-downtime** addition of new notification types
-✅ **Backward compatibility** with legacy multi-category subscriptions
-✅ **Clean architecture** with testable, decoupled components
-✅ **Dynamic configuration** via Spring Cloud Config or database
-✅ **Seamless migration** from type-based to category-based model
+- ✅ **Zero-downtime** addition of new notification types
+- ✅ **Backward compatibility** with legacy multi-category subscriptions
+- ✅ **Clean architecture** with testable, decoupled components
+- ✅ **Dynamic configuration** via Spring Cloud Config or database
+- ✅ **Seamless migration** from type-based to category-based model
 
 The migration strategy ensures a safe transition while maintaining full backward compatibility with existing clients.
 
@@ -836,5 +836,6 @@ The migration strategy ensures a safe transition while maintaining full backward
 
 **Document Version**: 1.0
 **Last Updated**: 2025-12-15
-**Author**: Architecture Team
+**Author**: Esteban Contreras
 **Status**: Proposed for Review
+

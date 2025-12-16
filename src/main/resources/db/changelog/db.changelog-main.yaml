@@ -9,3 +9,18 @@ databaseChangeLog:
   - include:
       file: "db.changelog-0002-insert-users-table.yaml"
       relativeToChangelogFile: true
+  - include:
+      file: "db.changelog-0003-create-notification-categories-table.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "db.changelog-0004-create-notification-types-table.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "db.changelog-0005-create-user-subscriptions-table.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "db.changelog-0006-insert-initial-categories-and-types.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "db.changelog-0007-rename-users-to-users-legacy.yaml"
+      relativeToChangelogFile: true

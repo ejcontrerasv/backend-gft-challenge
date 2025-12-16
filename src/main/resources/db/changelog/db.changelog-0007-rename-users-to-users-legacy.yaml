@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: "0007-rename-users-table-to-users-legacy"
+      author: "joksan.contreras"
+      comment: "Rename existing users table to users_legacy for dual-write migration pattern"
+      changes:
+        - renameTable:
+            oldTableName: "users"
+            newTableName: "users_legacy"
+      rollback:
+        - renameTable:
+            oldTableName: "users_legacy"
+            newTableName: "users"

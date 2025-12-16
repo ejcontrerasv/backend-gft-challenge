@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: "0004-create-notification-types-table"
+      author: "joksan.contreras"
+      changes:
+        - createTable:
+            tableName: "notification_types"
+            columns:
+              - column:
+                  name: "code"
+                  type: "varchar(50)"
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: "pk_notification_type_code"
+                    nullable: false
+              - column:
+                  name: "category_id"
+                  type: "varchar(50)"
+                  constraints:
+                    nullable: false
+                    foreignKeyName: "fk_notification_type_category"
+                    references: "notification_categories(id)"
+              - column:
+                  name: "added_at"
+                  type: "timestamp"
+                  defaultValueComputed: "CURRENT_TIMESTAMP"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "active"
+                  type: "boolean"
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: "idx_notification_types_category"
+            tableName: "notification_types"
+            columns:
+              - column:
+                  name: "category_id"
+      rollback:
+        - dropTable:
+            tableName: "notification_types"

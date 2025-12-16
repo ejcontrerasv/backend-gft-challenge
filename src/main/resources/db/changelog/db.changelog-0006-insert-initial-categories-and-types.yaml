@@ -1,0 +1,98 @@
+databaseChangeLog:
+  - changeSet:
+      id: "0006-insert-initial-categories"
+      author: "joksan.contreras"
+      changes:
+        - insert:
+            tableName: "notification_categories"
+            columns:
+              - column:
+                  name: "id"
+                  value: "CATEGORY_A"
+              - column:
+                  name: "name"
+                  value: "Category A"
+        - insert:
+            tableName: "notification_categories"
+            columns:
+              - column:
+                  name: "id"
+                  value: "CATEGORY_B"
+              - column:
+                  name: "name"
+                  value: "Category B"
+      rollback:
+        - delete:
+            tableName: "notification_categories"
+            where: "id IN ('CATEGORY_A', 'CATEGORY_B')"
+
+  - changeSet:
+      id: "0006-insert-initial-notification-types"
+      author: "joksan.contreras"
+      changes:
+        # Category A types
+        - insert:
+            tableName: "notification_types"
+            columns:
+              - column:
+                  name: "code"
+                  value: "type1"
+              - column:
+                  name: "category_id"
+                  value: "CATEGORY_A"
+              - column:
+                  name: "added_at"
+                  valueDate: "2023-01-01T00:00:00"
+        - insert:
+            tableName: "notification_types"
+            columns:
+              - column:
+                  name: "code"
+                  value: "type2"
+              - column:
+                  name: "category_id"
+                  value: "CATEGORY_A"
+              - column:
+                  name: "added_at"
+                  valueDate: "2023-06-01T00:00:00"
+        - insert:
+            tableName: "notification_types"
+            columns:
+              - column:
+                  name: "code"
+                  value: "type3"
+              - column:
+                  name: "category_id"
+                  value: "CATEGORY_A"
+              - column:
+                  name: "added_at"
+                  valueDate: "2024-01-01T00:00:00"
+        # Category B types
+        - insert:
+            tableName: "notification_types"
+            columns:
+              - column:
+                  name: "code"
+                  value: "type4"
+              - column:
+                  name: "category_id"
+                  value: "CATEGORY_B"
+              - column:
+                  name: "added_at"
+                  valueDate: "2023-01-01T00:00:00"
+        - insert:
+            tableName: "notification_types"
+            columns:
+              - column:
+                  name: "code"
+                  value: "type5"
+              - column:
+                  name: "category_id"
+                  value: "CATEGORY_B"
+              - column:
+                  name: "added_at"
+                  valueDate: "2023-06-01T00:00:00"
+      rollback:
+        - delete:
+            tableName: "notification_types"
+            where: "code IN ('type1', 'type2', 'type3', 'type4', 'type5')"
