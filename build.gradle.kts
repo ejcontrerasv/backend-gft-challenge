@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("com.autonomousapps.dependency-analysis") version "2.19.0"
     id("com.diffplug.spotless") version "6.25.0"
+    jacoco
 }
 
 group = "de.dkb.api"
@@ -23,36 +24,31 @@ repositories {
 extra["testcontainersVersion"] = "2.0.2"
 
 dependencies {
-    // Core Kotlin dependencies
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
-    // Spring Boot dependencies
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.kafka:spring-kafka")
 
-    // OpenAPI / Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
-    // JSON serialization/deserialization
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    // Database dependencies
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.liquibase:liquibase-core")
 
-    // Jakarta Persistence API
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
 
-    // Testing dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
+    testImplementation("io.mockk:mockk:1.13.9")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
     testRuntimeOnly("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.springframework.kafka:spring-kafka-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -97,4 +93,105 @@ spotless {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = "BUNDLE"
+            limit {
+                counter = "INSTRUCTION"
+                minimum = "0.60".toBigDecimal()
+            }
+        }
+        rule {
+            element = "PACKAGE"
+            includes =
+                listOf(
+                    "de.dkb.api.codeChallenge.domain*",
+                    "de.dkb.api.codeChallenge.application*",
+                )
+            excludes =
+                listOf(
+                    "de.dkb.api.codeChallenge.domain.repository*",
+                )
+            limit {
+                counter = "LINE"
+                minimum = "0.80".toBigDecimal()
+            }
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoTestCoverageVerification)
+}
+
+sourceSets {
+    val integrationTest by creating {
+        java.setSrcDirs(listOf("src/integrationTest/kotlin"))
+        resources.setSrcDirs(listOf("src/integrationTest/resources"))
+        compileClasspath += sourceSets["main"].output + configurations.testRuntimeClasspath.get()
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+configurations {
+    named("integrationTestImplementation") {
+        extendsFrom(configurations.testImplementation.get())
+    }
+    named("integrationTestRuntimeOnly") {
+        extendsFrom(configurations.testRuntimeOnly.get())
+    }
+}
+
+val integrationTest by tasks.registering(Test::class) {
+    description = "Runs the integration tests."
+    group = "verification"
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+    useJUnitPlatform()
+    shouldRunAfter(tasks.test)
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+(tasks.jacocoTestReport) {
+    dependsOn(tasks.test, integrationTest)
+    executionData(
+        fileTree(layout.buildDirectory) {
+            include("**/jacoco/*.exec")
+        },
+    )
+}
+
+(tasks.jacocoTestCoverageVerification) {
+    dependsOn(integrationTest)
+    executionData(
+        fileTree(layout.buildDirectory) {
+            include("**/jacoco/*.exec")
+        },
+    )
+}
+
+tasks.named("jacocoTestReport") {
+    dependsOn("spotlessKotlin", "spotlessKotlinGradle")
+}
+
+tasks.named("jacocoTestCoverageVerification") {
+    dependsOn("spotlessKotlin", "spotlessKotlinGradle")
+    dependsOn("jacocoTestReport")
 }

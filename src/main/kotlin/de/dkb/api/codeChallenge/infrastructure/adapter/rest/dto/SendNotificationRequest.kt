@@ -9,12 +9,12 @@ import java.util.UUID
  */
 @Schema(description = "Request to send a notification to a user")
 data class SendNotificationRequest(
-    @Schema(description = "User identifier to send notification to", example = "550e8400-e29b-41d4-a716-446655440000")
+    @field:Schema(description = "User identifier to send notification to", example = "550e8400-e29b-41d4-a716-446655440000")
     val userId: UUID,
 
-    @Schema(description = "Type of notification to send", example = "type1")
+    @field:Schema(description = "Type of notification to send", example = "type1")
     val notificationType: String,
 
-    @Schema(description = "Notification message content", example = "Your order has shipped!")
+    @field:Schema(description = "Notification message content", example = "Your order has shipped!")
     val message: String,
 )
