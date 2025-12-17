@@ -7,11 +7,7 @@ import java.time.Instant
  * Domain entity representing a notification type (e.g., type1, type2).
  * Each type belongs to a specific category.
  */
-data class NotificationType(
-    val code: String,
-    val categoryId: CategoryId,
-    val addedAt: Instant = Instant.now()
-) {
+data class NotificationType(val code: String, val categoryId: CategoryId, val addedAt: Instant = Instant.now()) {
     init {
         require(code.isNotBlank()) { "Notification type code cannot be blank" }
     }

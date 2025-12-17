@@ -16,7 +16,7 @@ private val logger = KotlinLogging.logger {}
 class SendNotificationUseCase(
     private val userRepository: UserRepository,
     private val categoryResolutionService: CategoryResolutionService,
-    private val notificationGateway: NotificationGateway
+    private val notificationGateway: NotificationGateway,
 ) {
 
     fun execute(command: SendNotificationCommand): NotificationResult {
@@ -36,7 +36,7 @@ class SendNotificationUseCase(
         if (!user.canReceiveNotificationType(command.notificationType)) {
             logger.info { "User ${command.userId.value} not subscribed to type ${command.notificationType}" }
             return NotificationResult.NotSent(
-                "User not subscribed to notification type: ${command.notificationType}"
+                "User not subscribed to notification type: ${command.notificationType}",
             )
         }
 
@@ -44,7 +44,7 @@ class SendNotificationUseCase(
             notificationGateway.sendNotification(
                 userId = command.userId,
                 notificationType = command.notificationType,
-                message = command.message
+                message = command.message,
             )
 
             logger.info { "Notification sent successfully to user ${command.userId.value}" }

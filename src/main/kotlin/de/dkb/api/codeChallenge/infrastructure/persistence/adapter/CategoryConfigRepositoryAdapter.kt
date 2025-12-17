@@ -20,7 +20,7 @@ private val logger = KotlinLogging.logger {}
 @Component
 class CategoryConfigRepositoryAdapter(
     private val categoryJpaRepository: NotificationCategoryJpaRepository,
-    private val typeJpaRepository: NotificationTypeJpaRepository
+    private val typeJpaRepository: NotificationTypeJpaRepository,
 ) : CategoryConfigRepository {
 
     private val cache = ConcurrentHashMap<CategoryId, NotificationCategory>()
@@ -40,9 +40,7 @@ class CategoryConfigRepositoryAdapter(
         return cache[id]
     }
 
-    override fun findTypesByCategory(categoryId: CategoryId): Set<NotificationType> {
-        return findCategoryById(categoryId)?.types ?: emptySet()
-    }
+    override fun findTypesByCategory(categoryId: CategoryId): Set<NotificationType> = findCategoryById(categoryId)?.types ?: emptySet()
 
     override fun findCategoryByTypeCode(typeCode: String): NotificationCategory? {
         if (typeToCategory.isEmpty()) refresh()

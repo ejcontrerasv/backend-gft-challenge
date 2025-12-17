@@ -17,14 +17,12 @@ data class LegacyUserEntity(
 
     @Convert(converter = LegacyNotificationTypeSetConverter::class)
     @Column(name = "notifications", nullable = false)
-    var notifications: MutableSet<LegacyNotificationType> = mutableSetOf()
+    var notifications: MutableSet<LegacyNotificationType> = mutableSetOf(),
 ) {
     constructor() : this(UUID.randomUUID(), mutableSetOf())
 
     /**
      * Get notifications as semicolon-separated string (for migration)
      */
-    fun getNotificationsAsString(): String {
-        return notifications.joinToString(";") { it.name }
-    }
+    fun getNotificationsAsString(): String = notifications.joinToString(";") { it.name }
 }

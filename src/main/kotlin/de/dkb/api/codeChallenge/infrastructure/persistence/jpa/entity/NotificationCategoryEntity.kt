@@ -20,7 +20,7 @@ class NotificationCategoryEntity(
     var createdAt: Instant = Instant.now(),
 
     @Column(name = "updated_at", nullable = false)
-    var updatedAt: Instant = Instant.now()
+    var updatedAt: Instant = Instant.now(),
 ) {
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
     var types: MutableSet<NotificationTypeEntity> = mutableSetOf()

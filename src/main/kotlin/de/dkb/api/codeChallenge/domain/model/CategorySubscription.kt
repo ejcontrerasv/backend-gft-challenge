@@ -6,11 +6,7 @@ import java.time.Instant
  * Domain entity representing a user's subscription to a notification category.
  * Part of the User aggregate.
  */
-data class CategorySubscription(
-    val category: NotificationCategory,
-    val subscribedAt: Instant,
-    val active: Boolean = true
-) {
+data class CategorySubscription(val category: NotificationCategory, val subscribedAt: Instant, val active: Boolean = true) {
     /**
      * Check if this subscription is currently active
      */

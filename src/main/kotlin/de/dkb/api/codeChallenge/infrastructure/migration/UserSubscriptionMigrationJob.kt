@@ -24,13 +24,13 @@ private val logger = KotlinLogging.logger {}
 @ConditionalOnProperty(
     name = ["migration.batch-job.enabled"],
     havingValue = "true",
-    matchIfMissing = false
+    matchIfMissing = false,
 )
 class UserSubscriptionMigrationJob(
     private val legacyUserJpaRepository: LegacyUserJpaRepository,
     private val userSubscriptionJpaRepository: UserSubscriptionJpaRepository,
     private val migrateUserSubscriptionsUseCase: MigrateUserSubscriptionsUseCase,
-    private val migrationProperties: MigrationProperties
+    private val migrationProperties: MigrationProperties,
 ) {
 
     @Scheduled(cron = "\${migration.batch-job.cron}")
@@ -72,7 +72,7 @@ class UserSubscriptionMigrationJob(
                 usersToMigrate.forEach { legacyUser ->
                     val command = MigrateUserCommand.from(
                         userId = legacyUser.id,
-                        legacyTypes = legacyUser.getNotificationsAsString()
+                        legacyTypes = legacyUser.getNotificationsAsString(),
                     )
 
                     when (val result = migrateUserSubscriptionsUseCase.execute(command)) {
@@ -99,7 +99,6 @@ class UserSubscriptionMigrationJob(
             logger.info { "Duration: ${duration.toMinutes()} minutes ${duration.toSecondsPart()} seconds" }
 
             checkMigrationProgress()
-
         } catch (e: Exception) {
             logger.error(e) { "Batch migration job failed with exception" }
         }

@@ -34,12 +34,12 @@ private val logger = KotlinLogging.logger {}
 @ConditionalOnProperty(
     name = ["migration.dual-write.enabled"],
     havingValue = "true",
-    matchIfMissing = true
+    matchIfMissing = true,
 )
 class DualWriteUserRepositoryAdapter(
     private val newUserRepository: UserRepositoryAdapter,
     private val legacyUserJpaRepository: LegacyUserJpaRepository,
-    private val legacyDataMigrator: LegacyDataMigrator
+    private val legacyDataMigrator: LegacyDataMigrator,
 ) : UserRepository {
 
     /**
@@ -61,9 +61,9 @@ class DualWriteUserRepositoryAdapter(
 
     @Transactional
     override fun save(user: User): User {
-    /**
-     * Write: Dual-write to both new and legacy tables
-     */
+        /**
+         * Write: Dual-write to both new and legacy tables
+         */
         logger.debug { "Dual-write save for user ${user.id.value}" }
 
         try {
@@ -77,13 +77,9 @@ class DualWriteUserRepositoryAdapter(
         }
     }
 
-    override fun findByCategory(categoryId: CategoryId): List<User> {
-        return newUserRepository.findByCategory(categoryId)
-    }
+    override fun findByCategory(categoryId: CategoryId): List<User> = newUserRepository.findByCategory(categoryId)
 
-    override fun existsById(id: UserId): Boolean {
-        return newUserRepository.existsById(id) || legacyUserJpaRepository.existsById(id.value)
-    }
+    override fun existsById(id: UserId): Boolean = newUserRepository.existsById(id) || legacyUserJpaRepository.existsById(id.value)
 
     override fun count(): Long {
         val newUsers = newUserRepository.findAll().map { it.id.value }.toSet()
@@ -111,13 +107,13 @@ class DualWriteUserRepositoryAdapter(
 
     private fun migrateUserFromLegacy(legacyUser: LegacyUserEntity): User? {
         return try {
-    /**
-     * Migrate a legacy user on-the-fly
-     */
+            /**
+             * Migrate a legacy user on-the-fly
+             */
             val legacyTypesString = legacyUser.getNotificationsAsString()
             val subscriptions = legacyDataMigrator.migrateUserTypes(
                 userId = UserId(legacyUser.id),
-                legacyTypes = legacyTypesString
+                legacyTypes = legacyTypesString,
             )
 
             if (subscriptions.isEmpty()) {
@@ -127,7 +123,7 @@ class DualWriteUserRepositoryAdapter(
 
             val migratedUser = User(
                 id = UserId(legacyUser.id),
-                subscriptions = subscriptions
+                subscriptions = subscriptions,
             )
 
             newUserRepository.save(migratedUser)
@@ -141,9 +137,10 @@ class DualWriteUserRepositoryAdapter(
 
     private fun saveLegacyFormat(user: User) {
         val typeCodes = user.getAllSubscribedTypeCodes()
-    /**
-     * Save user in legacy format (for dual-write)
-     */
+
+        /**
+         * Save user in legacy format (for dual-write)
+         */
 
         val notificationTypes = typeCodes.mapNotNull { typeCode ->
             try {
@@ -156,7 +153,7 @@ class DualWriteUserRepositoryAdapter(
 
         val legacyEntity = LegacyUserEntity(
             id = user.id.value,
-            notifications = notificationTypes
+            notifications = notificationTypes,
         )
 
         legacyUserJpaRepository.save(legacyEntity)

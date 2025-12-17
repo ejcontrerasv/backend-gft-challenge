@@ -23,9 +23,7 @@ interface LegacyDataMigrator {
     fun migrateUserTypes(userId: UserId, legacyTypes: String): Set<CategorySubscription>
 }
 
-class DefaultLegacyDataMigrator(
-    private val categoryResolutionService: CategoryResolutionService
-) : LegacyDataMigrator {
+class DefaultLegacyDataMigrator(private val categoryResolutionService: CategoryResolutionService) : LegacyDataMigrator {
 
     companion object {
         private const val TYPE_SEPARATOR = ";"
@@ -52,7 +50,7 @@ class DefaultLegacyDataMigrator(
             CategorySubscription(
                 category = category,
                 subscribedAt = Instant.now(),
-                active = true
+                active = true,
             )
         }.toSet()
 

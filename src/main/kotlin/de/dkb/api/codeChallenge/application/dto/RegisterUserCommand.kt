@@ -7,16 +7,11 @@ import java.util.UUID
  * Command to register a user with notification subscriptions.
  * Accepts legacy type-based format for backward compatibility.
  */
-data class RegisterUserCommand(
-    val userId: UserId,
-    val notificationTypes: Set<String>
-) {
+data class RegisterUserCommand(val userId: UserId, val notificationTypes: Set<String>) {
     companion object {
-        fun from(userId: UUID, types: Set<String>): RegisterUserCommand {
-            return RegisterUserCommand(
-                userId = UserId(userId),
-                notificationTypes = types
-            )
-        }
+        fun from(userId: UUID, types: Set<String>): RegisterUserCommand = RegisterUserCommand(
+            userId = UserId(userId),
+            notificationTypes = types,
+        )
     }
 }

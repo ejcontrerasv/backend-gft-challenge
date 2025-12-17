@@ -11,34 +11,30 @@ import de.dkb.api.codeChallenge.infrastructure.persistence.jpa.entity.Notificati
  */
 object NotificationCategoryMapper {
 
-    fun toDomain(entity: NotificationCategoryEntity): NotificationCategory {
-        return NotificationCategory(
-            id = CategoryId(entity.id),
-            name = entity.name,
-            types = entity.types.map { typeEntity ->
-                NotificationType(
-                    code = typeEntity.code,
-                    categoryId = CategoryId(entity.id),
-                    addedAt = typeEntity.addedAt
-                )
-            }.toSet()
-        )
-    }
+    fun toDomain(entity: NotificationCategoryEntity): NotificationCategory = NotificationCategory(
+        id = CategoryId(entity.id),
+        name = entity.name,
+        types = entity.types.map { typeEntity ->
+            NotificationType(
+                code = typeEntity.code,
+                categoryId = CategoryId(entity.id),
+                addedAt = typeEntity.addedAt,
+            )
+        }.toSet(),
+    )
 
-    fun toDomainList(entities: List<NotificationCategoryEntity>): List<NotificationCategory> {
-        return entities.map { toDomain(it) }
-    }
+    fun toDomainList(entities: List<NotificationCategoryEntity>): List<NotificationCategory> = entities.map { toDomain(it) }
 
     fun toEntity(domain: NotificationCategory): NotificationCategoryEntity {
         val entity = NotificationCategoryEntity(
             id = domain.id.value,
-            name = domain.name
+            name = domain.name,
         )
 
         entity.types = domain.types.map { type ->
             val typeEntity = NotificationTypeEntity(
                 code = type.code,
-                addedAt = type.addedAt
+                addedAt = type.addedAt,
             )
             typeEntity.category = entity
             typeEntity

@@ -9,7 +9,7 @@ import java.time.Instant
 @Entity
 @Table(
     name = "notification_types",
-    indexes = [Index(name = "idx_notification_types_category", columnList = "category_id")]
+    indexes = [Index(name = "idx_notification_types_category", columnList = "category_id")],
 )
 class NotificationTypeEntity(
     @Id
@@ -24,7 +24,7 @@ class NotificationTypeEntity(
     var addedAt: Instant = Instant.now(),
 
     @Column(name = "active", nullable = false)
-    var active: Boolean = true
+    var active: Boolean = true,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
