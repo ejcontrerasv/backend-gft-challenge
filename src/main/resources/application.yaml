@@ -6,11 +6,33 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
 
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-main.yaml
+
+# Migration configuration
+migration:
+  dual-write:
+    enabled: true
+    read-source: NEW_WITH_FALLBACK  # Options: NEW_WITH_FALLBACK, NEW_ONLY, LEGACY_ONLY
+  batch-job:
+    enabled: false  # Set to true to enable nightly batch migration
+    batch-size: 1000
+    cron: "0 0 2 * * ?"  # Run at 2 AM daily
+
 logging:
   level:
-   org.hibernate.SQL: DEBUG
+    de.dkb.api.codeChallenge: INFO
+    de.dkb.api.codeChallenge.infrastructure.persistence.adapter.DualWriteUserRepositoryAdapter: DEBUG
+    de.dkb.api.codeChallenge.domain.service: DEBUG
 
 

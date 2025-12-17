@@ -8,22 +8,30 @@ import java.time.Instant
  */
 @Entity
 @Table(name = "notification_categories")
-data class NotificationCategoryEntity(
+class NotificationCategoryEntity(
     @Id
     @Column(name = "id", length = 50)
-    val id: String,
+    var id: String = "",
 
     @Column(name = "name", nullable = false)
-    val name: String,
+    var name: String = "",
 
     @Column(name = "created_at", nullable = false)
-    val createdAt: Instant = Instant.now(),
+    var createdAt: Instant = Instant.now(),
 
     @Column(name = "updated_at", nullable = false)
-    val updatedAt: Instant = Instant.now(),
-
-    @OneToMany(mappedBy = "category", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    val types: Set<NotificationTypeEntity> = emptySet()
+    var updatedAt: Instant = Instant.now()
 ) {
-    constructor() : this("", "", Instant.now(), Instant.now(), emptySet())
+    @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
+    var types: MutableSet<NotificationTypeEntity> = mutableSetOf()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is NotificationCategoryEntity) return false
+        return id == other.id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "NotificationCategoryEntity(id='$id', name='$name')"
 }

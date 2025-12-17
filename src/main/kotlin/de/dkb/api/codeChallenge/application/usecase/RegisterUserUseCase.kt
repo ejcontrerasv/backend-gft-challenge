@@ -7,8 +7,11 @@ import de.dkb.api.codeChallenge.domain.model.User
 import de.dkb.api.codeChallenge.domain.repository.UserRepository
 import de.dkb.api.codeChallenge.domain.service.CategoryResolutionService
 import de.dkb.api.codeChallenge.domain.service.SubscriptionValidator
-import org.slf4j.LoggerFactory
+import de.dkb.api.codeChallenge.domain.service.ValidationResult
+import mu.KotlinLogging
 import java.time.Instant
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Use case for registering a user with notification subscriptions.
@@ -19,35 +22,32 @@ class RegisterUserUseCase(
     private val categoryResolutionService: CategoryResolutionService,
     private val subscriptionValidator: SubscriptionValidator
 ) {
-    private val logger = LoggerFactory.getLogger(javaClass)
 
     fun execute(command: RegisterUserCommand): UserRegistrationResult {
-        logger.info("Registering user ${command.userId.value} with types: ${command.notificationTypes}")
+        logger.info { "Registering user ${command.userId.value} with types: ${command.notificationTypes}" }
 
         try {
-            // Resolve categories from incoming types (backward compatible)
             val categories = categoryResolutionService
                 .resolveCategoriesFromLegacyTypes(command.notificationTypes)
 
             if (categories.isEmpty()) {
-                logger.warn("No valid categories found for user ${command.userId.value}")
+                logger.warn { "No valid categories found for user ${command.userId.value}" }
                 return UserRegistrationResult.Failure(
                     userId = command.userId,
                     errors = listOf("No valid notification types provided")
                 )
             }
 
-            // Validate business rules
             val validationResult = subscriptionValidator.validate(command.userId, categories)
             if (!validationResult.isValid()) {
-                logger.warn("Validation failed for user ${command.userId.value}: ${validationResult.getErrors()}")
+                val errors = (validationResult as ValidationResult.Invalid).errors
+                logger.warn { "Validation failed for user ${command.userId.value}: $errors" }
                 return UserRegistrationResult.Failure(
                     userId = command.userId,
-                    errors = validationResult.getErrors()
+                    errors = errors
                 )
             }
 
-            // Create user with category subscriptions
             val subscriptions = categories.map { category ->
                 CategorySubscription(
                     category = category,
@@ -61,10 +61,9 @@ class RegisterUserUseCase(
                 subscriptions = subscriptions
             )
 
-            // Save user
             userRepository.save(user)
 
-            logger.info("Successfully registered user ${command.userId.value} to ${categories.size} categories")
+            logger.info { "Successfully registered user ${command.userId.value} to ${categories.size} categories" }
 
             return UserRegistrationResult.Success(
                 userId = command.userId,
@@ -72,7 +71,7 @@ class RegisterUserUseCase(
             )
 
         } catch (e: Exception) {
-            logger.error("Failed to register user ${command.userId.value}", e)
+            logger.error(e) { "Failed to register user ${command.userId.value}" }
             return UserRegistrationResult.Failure(
                 userId = command.userId,
                 errors = listOf("Registration failed: ${e.message}")

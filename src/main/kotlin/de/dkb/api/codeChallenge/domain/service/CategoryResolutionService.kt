@@ -2,7 +2,9 @@ package de.dkb.api.codeChallenge.domain.service
 
 import de.dkb.api.codeChallenge.domain.model.NotificationCategory
 import de.dkb.api.codeChallenge.domain.repository.CategoryConfigRepository
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Domain service for resolving notification types to their categories.
@@ -33,14 +35,12 @@ class DefaultCategoryResolutionService(
     private val categoryConfigRepository: CategoryConfigRepository
 ) : CategoryResolutionService {
 
-    private val logger = LoggerFactory.getLogger(javaClass)
-
     override fun resolveCategoryByTypeCode(typeCode: String): NotificationCategory? {
         val normalizedCode = typeCode.trim().lowercase()
 
         return categoryConfigRepository.findCategoryByTypeCode(normalizedCode).also {
             if (it == null) {
-                logger.warn("Unknown notification type code: $typeCode")
+                logger.warn { "Unknown notification type code: $typeCode" }
             }
         }
     }
@@ -53,7 +53,7 @@ class DefaultCategoryResolutionService(
             if (category != null) {
                 categories.add(category)
             } else {
-                logger.warn("Skipping unknown type code during migration: $typeCode")
+                logger.warn { "Skipping unknown type code during migration: $typeCode" }
             }
         }
 
