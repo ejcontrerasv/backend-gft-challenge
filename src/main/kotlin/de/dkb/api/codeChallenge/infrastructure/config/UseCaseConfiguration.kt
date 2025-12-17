@@ -1,5 +1,8 @@
 package de.dkb.api.codeChallenge.infrastructure.config
 
+import de.dkb.api.codeChallenge.application.service.DefaultCategoryResolutionService
+import de.dkb.api.codeChallenge.application.service.DefaultLegacyDataMigrator
+import de.dkb.api.codeChallenge.application.service.DefaultSubscriptionValidator
 import de.dkb.api.codeChallenge.application.usecase.MigrateUserSubscriptionsUseCase
 import de.dkb.api.codeChallenge.application.usecase.RegisterUserUseCase
 import de.dkb.api.codeChallenge.application.usecase.SendNotificationUseCase
@@ -7,9 +10,6 @@ import de.dkb.api.codeChallenge.domain.repository.CategoryConfigRepository
 import de.dkb.api.codeChallenge.domain.repository.NotificationGateway
 import de.dkb.api.codeChallenge.domain.repository.UserRepository
 import de.dkb.api.codeChallenge.domain.service.CategoryResolutionService
-import de.dkb.api.codeChallenge.domain.service.DefaultCategoryResolutionService
-import de.dkb.api.codeChallenge.domain.service.DefaultLegacyDataMigrator
-import de.dkb.api.codeChallenge.domain.service.DefaultSubscriptionValidator
 import de.dkb.api.codeChallenge.domain.service.LegacyDataMigrator
 import de.dkb.api.codeChallenge.domain.service.SubscriptionValidator
 import org.springframework.context.annotation.Bean

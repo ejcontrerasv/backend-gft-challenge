@@ -122,12 +122,13 @@ tasks.jacocoTestCoverageVerification {
             element = "PACKAGE"
             includes =
                 listOf(
-                    "de.dkb.api.codeChallenge.domain*",
+                    "de.dkb.api.codeChallenge.domain.model*",
                     "de.dkb.api.codeChallenge.application*",
                 )
             excludes =
                 listOf(
                     "de.dkb.api.codeChallenge.domain.repository*",
+                    "de.dkb.api.codeChallenge.domain.service*",
                 )
             limit {
                 counter = "LINE"
@@ -194,4 +195,43 @@ tasks.named("jacocoTestReport") {
 tasks.named("jacocoTestCoverageVerification") {
     dependsOn("spotlessKotlin", "spotlessKotlinGradle")
     dependsOn("jacocoTestReport")
+}
+
+@Suppress("DEPRECATION")
+tasks.register("installGitHooks") {
+    group = "git"
+    description = "Configure Git to use .githooks directory automatically"
+
+    val hooksConfigFile = file(".git/config")
+
+    outputs.upToDateWhen {
+        hooksConfigFile.exists() && hooksConfigFile.readText().contains("hooksPath = .githooks")
+    }
+
+    onlyIf {
+        file(".git").exists() && file(".githooks/pre-commit").exists()
+    }
+
+    doLast {
+        project.exec {
+            commandLine("git", "config", "core.hooksPath", ".githooks")
+        }
+
+        if (System
+                .getProperty("os.name")
+                .lowercase()
+                .contains("windows")
+                .not()
+        ) {
+            project.exec {
+                commandLine("chmod", "+x", ".githooks/pre-commit")
+            }
+        }
+
+        logger.lifecycle("✅ Git hooks configured successfully!")
+    }
+}
+
+tasks.named("build") {
+    dependsOn("installGitHooks")
 }
