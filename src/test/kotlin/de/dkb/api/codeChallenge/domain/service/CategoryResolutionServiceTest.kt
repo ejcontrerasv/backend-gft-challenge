@@ -1,5 +1,6 @@
 package de.dkb.api.codeChallenge.domain.service
 
+import de.dkb.api.codeChallenge.application.service.DefaultCategoryResolutionService
 import de.dkb.api.codeChallenge.domain.model.NotificationCategory
 import de.dkb.api.codeChallenge.domain.model.NotificationType
 import de.dkb.api.codeChallenge.domain.model.valueobject.CategoryId

@@ -122,12 +122,13 @@ tasks.jacocoTestCoverageVerification {
             element = "PACKAGE"
             includes =
                 listOf(
-                    "de.dkb.api.codeChallenge.domain*",
+                    "de.dkb.api.codeChallenge.domain.model*",
                     "de.dkb.api.codeChallenge.application*",
                 )
             excludes =
                 listOf(
                     "de.dkb.api.codeChallenge.domain.repository*",
+                    "de.dkb.api.codeChallenge.domain.service*",
                 )
             limit {
                 counter = "LINE"
@@ -194,4 +195,36 @@ tasks.named("jacocoTestReport") {
 tasks.named("jacocoTestCoverageVerification") {
     dependsOn("spotlessKotlin", "spotlessKotlinGradle")
     dependsOn("jacocoTestReport")
+}
+
+tasks.register<Exec>("installGitHooks") {
+    group = "git"
+    description = "Configure Git to use .githooks directory automatically"
+
+    onlyIf {
+        file(".git").exists() && file(".githooks/pre-commit").exists()
+    }
+
+    doFirst {
+        commandLine("git", "config", "core.hooksPath", ".githooks")
+
+        if (System
+                .getProperty("os.name")
+                .lowercase()
+                .contains("windows")
+                .not()
+        ) {
+            project.exec {
+                commandLine("chmod", "+x", ".githooks/pre-commit")
+            }
+        }
+    }
+
+    doLast {
+        logger.lifecycle("✅ Git hooks configured successfully! Pre-commit hook will run automatically.")
+    }
+}
+
+tasks.named("processResources") {
+    dependsOn("installGitHooks")
 }
