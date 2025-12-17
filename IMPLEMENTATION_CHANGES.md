@@ -4,10 +4,10 @@
 
 This document details the complete implementation of hexagonal architecture for the notification system, including a safe dual-write migration strategy to transition from type-based to category-based subscriptions.
 
-**Date**: 2025-12-15
-**Status**: ✅ Implementation Complete
-**Architecture**: Hexagonal (Ports & Adapters)
-**Migration Pattern**: Dual-Write with Lazy Migration
+- **Date**: 2025-12-15
+- **Status**: ✅ Implementation Complete
+- **Architecture**: Hexagonal (Ports & Adapters)
+- **Migration Pattern**: Dual-Write with Lazy Migration
 
 ---
 
@@ -43,12 +43,12 @@ This document details the complete implementation of hexagonal architecture for 
 
 ### Key Achievements
 
-✅ **Zero Downtime**: System operational during entire migration
-✅ **Backward Compatible**: Existing API unchanged
-✅ **Scalable**: Add `type6` via database insert, no code deployment
-✅ **Safe Rollback**: Switch read source via config flag
-✅ **Multi-Category Support**: Handles `"type1;type5"` → [CategoryA, CategoryB]
-✅ **Clean Architecture**: Hexagonal pattern with clear boundaries
+- ✅ **Zero Downtime**: System operational during entire migration
+- ✅ **Backward Compatible**: Existing API unchanged
+- ✅ **Scalable**: Add `type6` via database insert, no code deployment
+- ✅ **Safe Rollback**: Switch read source via config flag
+- ✅ **Multi-Category Support**: Handles `"type1;type5"` → [CategoryA, CategoryB]
+- ✅ **Clean Architecture**: Hexagonal pattern with clear boundaries
 
 ---
 
@@ -946,6 +946,104 @@ src/test/kotlin/
 
 ---
 
+## Recent Improvements (Latest Updates - December 17, 2025)
+
+### Hexagonal Architecture Refinement
+
+**Service Layer Reorganization**:
+
+Domain services have been properly separated following hexagonal architecture principles:
+
+**Domain Layer (Interfaces Only)**:
+- `domain/service/CategoryResolutionService.kt` - Interface
+- `domain/service/SubscriptionValidator.kt` - Interface with `ValidationResult` sealed class
+- `domain/service/LegacyDataMigrator.kt` - Interface with `MigrationException`
+
+**Application Layer (Implementations)**:
+- `application/service/DefaultCategoryResolutionService.kt` - Implementation
+- `application/service/DefaultSubscriptionValidator.kt` - Implementation
+- `application/service/DefaultLegacyDataMigrator.kt` - Implementation
+
+**Benefits**:
+- ✅ Clean separation: Ports in domain, adapters in application
+- ✅ Domain layer has zero infrastructure dependencies
+- ✅ Implementations properly in application layer
+- ✅ Better testability and modularity
+- ✅ Follows hexagonal architecture strictly
+
+### Spring Boot Dependency Alignment
+
+**Fixed Version Conflicts**:
+- Downgraded springdoc-openapi from 3.0.0 to 2.6.0 (Boot 3 compatible)
+- Removed transitive Boot 4 classes causing conflicts
+- Aligned all dependencies with Spring Boot 3.5.3
+- Resolved `ErrorPageRegistrar` bean conflict
+- Removed unnecessary `spring.main.allow-bean-definition-overriding` workaround
+
+**Result**: Application starts cleanly without autoconfiguration errors ✅
+
+### Automatic Git Hooks Setup
+
+**Gradle Integration**:
+
+A new `installGitHooks` Gradle task automatically configures Git hooks for new developers:
+
+```bash
+# Runs automatically on first build
+./gradlew build
+
+# Or manually
+./gradlew installGitHooks
+```
+
+**Implementation Details**:
+- Uses `git config core.hooksPath .githooks` (version-controlled)
+- Caches with `outputs.upToDateWhen` to run only once
+- Cross-platform support (Unix/Mac/Windows compatible)
+- Validates `.git` and `.githooks` existence before running
+- Makes pre-commit hook executable on Unix-like systems
+
+**Pre-commit Hook Validations**:
+1. ✅ Branch naming convention (`feat|fix|chore/NOJIRA/description`)
+2. ✅ Code formatting enforcement (Spotless + ktlint)
+3. ✅ Build success verification
+4. ✅ Unit tests with 80%+ coverage
+5. ✅ Integration tests
+
+**Developer Experience**:
+- New developers: Just clone and run `./gradlew build` → hooks configured
+- No manual setup required
+- Consistent workflow across entire team
+- Prevents commits that violate code quality standards
+- Clear feedback messages
+
+### JaCoCo Coverage Optimization
+
+**Updated Coverage Rules**:
+
+Following the hexagonal architecture separation, coverage rules were refined:
+
+**Coverage Exclusions**:
+- Exclude `domain/service/*` (interfaces - output ports)
+- Exclude `domain/repository/*` (interfaces - output ports)
+
+**Coverage Requirements**:
+- `domain/model/*`: 80% line coverage
+- `application/*`: 80% line coverage
+- Overall: 60% instruction coverage (baseline)
+
+**Rationale**:
+- Interfaces don't need coverage (they're contracts)
+- Implementations in application layer have strict requirements
+- Focus on testing business logic, not boilerplate
+
+**Verification**:
+```bash
+./gradlew jacocoTestCoverageVerification
+```
+
+---
+
 ## Conclusion
 
 This implementation successfully addresses the notification problem by:
@@ -960,7 +1058,17 @@ The system is production-ready with comprehensive edge case handling, detailed l
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-12-15
-**Author**: Esteban Contreras
-**Implementation Status**: ✅ Complete
+## Change History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.2 | 2025-12-17 | Added hexagonal architecture refinement, Git hooks automation, Spring Boot dependency fixes |
+| 1.1 | 2025-12-16 | Added testing strategy with JaCoCo coverage optimization |
+| 1.0 | 2025-12-15 | Initial implementation with hexagonal architecture and dual-write migration |
+
+---
+
+- **Document Version**: 1.2
+- **Last Updated**: 2025-12-17
+- **Author**: Esteban Contreras
+- **Implementation Status**: ✅ Complete and Optimized
