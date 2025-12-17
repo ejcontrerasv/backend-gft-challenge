@@ -18,9 +18,13 @@ import java.util.UUID
 @ActiveProfiles("test")
 class NotificationApiIntegrationTest {
 
-    @Autowired lateinit var mockMvc: MockMvc
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    lateinit var mockMvc: MockMvc
 
-    @Autowired lateinit var objectMapper: ObjectMapper
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Test
     fun `register and send notification end-to-end`() {

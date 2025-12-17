@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration
  */
 @Configuration
 @ConfigurationProperties(prefix = "migration")
-data class MigrationProperties(var dualWrite: DualWriteConfig = DualWriteConfig(), var batchJob: BatchJobConfig = BatchJobConfig())
+class MigrationProperties(var dualWrite: DualWriteConfig = DualWriteConfig(), var batchJob: BatchJobConfig = BatchJobConfig())
 
 data class DualWriteConfig(var enabled: Boolean = true, var readSource: ReadSource = ReadSource.NEW_WITH_FALLBACK)
 
