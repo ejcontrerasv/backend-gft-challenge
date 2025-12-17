@@ -19,7 +19,6 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-main.yaml
 
-# Migration configuration
 migration:
   dual-write:
     enabled: true
@@ -34,5 +33,3 @@ logging:
     de.dkb.api.codeChallenge: INFO
     de.dkb.api.codeChallenge.infrastructure.persistence.adapter.DualWriteUserRepositoryAdapter: DEBUG
     de.dkb.api.codeChallenge.domain.service: DEBUG
-
-

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Running local CI checks..."
+
+# Check if the branch name is valid
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+# Regular expression for branch name validation
+BRANCH_REGEX='^(feat|fix|chore)\/NOJIRA+\/.+$'
+
+# Check if the branch name matches the defined regex
+if ! [[ $BRANCH_NAME =~ $BRANCH_REGEX ]]; then
+   echo "Error: Invalid branch name format."
+   exit 1
+fi
+
+# Apply spotless code formatting to staged files
+stagedFiles=$(git diff --staged --name-only)
+echo "Running spotlessApply. Formatting code..."
+./gradlew spotlessApply
+
+for file in $stagedFiles; do
+  if test -f "$file"; then
+    git add "$file"
+  fi
+done
+
+./gradlew clean build || { echo "Build failed"; exit 1; }
+./gradlew test jacocoTestCoverageVerification || { echo "Coverage threshold not met"; exit 1; }
+./gradlew integrationTest || { echo "Integration tests failed"; exit 1; }
+
+echo "✅ All checks passed. You can Push now..."
