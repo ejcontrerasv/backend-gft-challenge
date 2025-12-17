@@ -7,7 +7,7 @@ echo "Running local CI checks..."
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
 # Regular expression for branch name validation
-BRANCH_REGEX='^(feat|fix|chore)\/NOJIRA+\/.+$'
+BRANCH_REGEX='^(feat|fix|chore|docs)\/NOJIRA+\/.+$'
 
 # Check if the branch name matches the defined regex
 if ! [[ $BRANCH_NAME =~ $BRANCH_REGEX ]]; then
