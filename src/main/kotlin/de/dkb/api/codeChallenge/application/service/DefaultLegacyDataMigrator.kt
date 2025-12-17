@@ -9,9 +9,7 @@ import java.time.Instant
 
 private val logger = KotlinLogging.logger {}
 
-class DefaultLegacyDataMigrator(
-    private val categoryResolutionService: CategoryResolutionService
-) : LegacyDataMigrator {
+class DefaultLegacyDataMigrator(private val categoryResolutionService: CategoryResolutionService) : LegacyDataMigrator {
 
     companion object {
         private const val TYPE_SEPARATOR = ";"
@@ -59,4 +57,3 @@ class DefaultLegacyDataMigrator(
             .toSet()
     }
 }
-

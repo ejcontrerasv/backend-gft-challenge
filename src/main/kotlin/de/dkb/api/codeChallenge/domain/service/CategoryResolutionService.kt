@@ -23,4 +23,3 @@ interface CategoryResolutionService {
      */
     fun isValidTypeCode(typeCode: String): Boolean
 }
-

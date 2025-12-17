@@ -11,9 +11,7 @@ private val logger = KotlinLogging.logger {}
  * Default implementation of CategoryResolutionService.
  * Located in application layer as it orchestrates domain logic with infrastructure dependencies.
  */
-class DefaultCategoryResolutionService(
-    private val categoryConfigRepository: CategoryConfigRepository
-) : CategoryResolutionService {
+class DefaultCategoryResolutionService(private val categoryConfigRepository: CategoryConfigRepository) : CategoryResolutionService {
 
     override fun resolveCategoryByTypeCode(typeCode: String): NotificationCategory? {
         val normalizedCode = typeCode.trim().lowercase()
@@ -42,4 +40,3 @@ class DefaultCategoryResolutionService(
 
     override fun isValidTypeCode(typeCode: String): Boolean = resolveCategoryByTypeCode(typeCode) != null
 }
-

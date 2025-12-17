@@ -22,4 +22,3 @@ sealed class ValidationResult {
 
     fun isValid(): Boolean = this is Valid
 }
-

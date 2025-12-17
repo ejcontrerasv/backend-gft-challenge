@@ -197,16 +197,25 @@ tasks.named("jacocoTestCoverageVerification") {
     dependsOn("jacocoTestReport")
 }
 
-tasks.register<Exec>("installGitHooks") {
+@Suppress("DEPRECATION")
+tasks.register("installGitHooks") {
     group = "git"
     description = "Configure Git to use .githooks directory automatically"
+
+    val hooksConfigFile = file(".git/config")
+
+    outputs.upToDateWhen {
+        hooksConfigFile.exists() && hooksConfigFile.readText().contains("hooksPath = .githooks")
+    }
 
     onlyIf {
         file(".git").exists() && file(".githooks/pre-commit").exists()
     }
 
-    doFirst {
-        commandLine("git", "config", "core.hooksPath", ".githooks")
+    doLast {
+        project.exec {
+            commandLine("git", "config", "core.hooksPath", ".githooks")
+        }
 
         if (System
                 .getProperty("os.name")
@@ -218,13 +227,11 @@ tasks.register<Exec>("installGitHooks") {
                 commandLine("chmod", "+x", ".githooks/pre-commit")
             }
         }
-    }
 
-    doLast {
-        logger.lifecycle("✅ Git hooks configured successfully! Pre-commit hook will run automatically.")
+        logger.lifecycle("✅ Git hooks configured successfully!")
     }
 }
 
-tasks.named("processResources") {
+tasks.named("build") {
     dependsOn("installGitHooks")
 }

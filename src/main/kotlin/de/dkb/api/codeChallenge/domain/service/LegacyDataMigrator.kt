@@ -19,7 +19,6 @@ interface LegacyDataMigrator {
     fun migrateUserTypes(userId: UserId, legacyTypes: String): Set<CategorySubscription>
 }
 
-
 /**
  * Exception thrown when migration fails
  */
