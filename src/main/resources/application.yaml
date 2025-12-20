@@ -22,7 +22,7 @@ spring:
 migration:
   dual-write:
     enabled: true
-    read-source: NEW_WITH_FALLBACK  # Options: NEW_WITH_FALLBACK, NEW_ONLY, LEGACY_ONLY
+    read-source: LEGACY_ONLY  # Options: NEW_WITH_FALLBACK, NEW_ONLY, LEGACY_ONLY
   batch-job:
     enabled: false  # Set to true to enable nightly batch migration
     batch-size: 1000
@@ -30,6 +30,6 @@ migration:
 
 logging:
   level:
-    de.dkb.api.codeChallenge: INFO
+    de.dkb.api.codeChallenge: DEBUG
     de.dkb.api.codeChallenge.infrastructure.persistence.adapter.DualWriteUserRepositoryAdapter: DEBUG
     de.dkb.api.codeChallenge.domain.service: DEBUG

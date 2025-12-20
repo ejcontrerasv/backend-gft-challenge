@@ -370,9 +370,14 @@ migration:
 ### Configuration Options
 
 **Read Sources**:
-- `NEW_WITH_FALLBACK`: Try new schema first, fallback to legacy (default during migration)
+- `NEW_WITH_FALLBACK`: Try new schema first, fallback to legacy with on-the-fly migration (default during migration)
 - `NEW_ONLY`: Read only from new schema (after migration complete)
-- `LEGACY_ONLY`: Read only from legacy schema (rollback scenario)
+- `LEGACY_ONLY`: Read only from legacy schema, **NO migration happens** (emergency rollback scenario)
+
+> ⚠️ **LEGACY_ONLY Behavior**: This mode is designed for emergency rollback scenarios. 
+> When enabled, the system reads ONLY from the legacy table and performs NO writes to the new table.
+> Legacy data is converted to domain objects in-memory only (no persistence).
+> This ensures system stability if the new implementation is failing or corrupted.
 
 **Migration Phases**:
 

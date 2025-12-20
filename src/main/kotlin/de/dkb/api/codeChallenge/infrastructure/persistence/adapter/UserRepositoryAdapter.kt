@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional
 private val logger = KotlinLogging.logger {}
 
 /**
- * Implementation of UserRepository using new user_subscriptions table.
- * Reads from category-based schema.
+ * Implementation of UserRepository using the new user_subscriptions table.
+ * Reads from a category-based schema.
  */
 @Component
 class UserRepositoryAdapter(

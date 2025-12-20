@@ -145,11 +145,85 @@ src/
 ✅ **Code Quality Automation** - Pre-commit hooks enforce standards  
 ✅ **API Documentation** - Swagger/OpenAPI for interactive testing  
 
+## 🔄 Migration Strategy
+
+This project implements a **Dual-Write Migration Pattern** to safely transition from type-based to category-based subscriptions with zero downtime.
+
+### Read Source Strategies
+
+The system supports three read strategies, configurable via `application.yaml`:
+
+```yaml
+migration:
+  dual-write:
+    enabled: true
+    read-source: NEW_WITH_FALLBACK  # Options: NEW_WITH_FALLBACK, NEW_ONLY, LEGACY_ONLY
+```
+
+| Strategy | Description | Use Case |
+|----------|-------------|----------|
+| `NEW_WITH_FALLBACK` | Read from new table first, fallback to legacy with on-the-fly migration | Default during migration |
+| `NEW_ONLY` | Read only from new table, no fallback | After 100% migration complete |
+| `LEGACY_ONLY` | Read only from legacy table, **NO migration** | Emergency rollback |
+
+### Migration Phases
+
+| Phase | Configuration | Description |
+|-------|--------------|-------------|
+| **1. Active Migration** | `read-source: NEW_WITH_FALLBACK` | Dual-write + lazy migration |
+| **2. Batch Migration** | `batch-job.enabled: true` | Nightly batch processing |
+| **3. Verification** | `read-source: NEW_ONLY` | Test with new table only |
+| **4. Complete** | Remove dual-write code | Legacy table can be dropped |
+
+### Strategy Behavior Summary
+
+```
+NEW_WITH_FALLBACK (Default)
+├── ✅ Reads from NEW first
+├── ✅ Falls back to LEGACY if not found
+├── ✅ Performs on-the-fly migration
+└── ✅ Saves migrated user to NEW table
+
+NEW_ONLY (Post-Migration)
+├── ✅ Reads ONLY from NEW table
+├── ❌ No fallback to LEGACY
+├── ❌ No migration
+└── ⚡ Best performance (single query)
+
+LEGACY_ONLY (Emergency Rollback)
+├── ✅ Reads ONLY from LEGACY table
+├── ❌ No access to NEW table
+├── ❌ NO migration happens
+└── 🔒 Safe for emergencies
+```
+
+### Emergency Rollback
+
+If issues are detected with the new implementation:
+
+```yaml
+# application.yaml
+migration:
+  dual-write:
+    read-source: LEGACY_ONLY  # Immediate rollback
+```
+
+This mode:
+- Reads **only** from the legacy table
+- Performs **no migration** (data in NEW table is untouched)
+- Returns 404 for users that only exist in NEW table
+- Ensures system stability during incident resolution
+
+### Testing Strategies
+
+For detailed testing instructions without code changes, see:
+- **[migration_configuration_flow.md](./migration_configuration_flow.md)** - Complete testing guide
+
 ## 📝 Documentation Files
 
 - **[CODE_CHALLENGE.md](./CODE_CHALLENGE.md)** - Original problem statement
 - **[IMPLEMENTATION_CHANGES.md](./IMPLEMENTATION_CHANGES.md)** - Complete architecture & implementation details (v1.2)
-- **[README.md](./README.md)** - This file
+- **[migration_configuration_flow.md](./migration_configuration_flow.md)** - Migration strategy pattern details
 
 
 
