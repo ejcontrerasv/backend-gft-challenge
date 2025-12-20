@@ -36,7 +36,7 @@ class OpenApiConfiguration {
                 .contact(
                     Contact()
                         .name("Development Team")
-                        .email("dev@example.com"),
+                        .email("ejcontrerasv@gmail.com"),
                 )
                 .license(
                     License()

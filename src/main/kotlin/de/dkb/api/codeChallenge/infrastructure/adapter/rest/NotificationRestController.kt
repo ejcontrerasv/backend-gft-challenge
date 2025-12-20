@@ -127,7 +127,7 @@ class NotificationRestController(private val registerUserUseCase: RegisterUserUs
                     sent = true,
                     message = result.message,
                 )
-                ResponseEntity.ok(ApiResponse.Success(response))
+                ResponseEntity.ok(ApiResponse.Success(response, request.message))
             }
 
             is NotificationResult.NotSent -> {
@@ -135,7 +135,7 @@ class NotificationRestController(private val registerUserUseCase: RegisterUserUs
                     sent = false,
                     message = result.reason,
                 )
-                ResponseEntity.ok(ApiResponse.Success(response))
+                ResponseEntity.ok(ApiResponse.Success(response, result.reason))
             }
 
             is NotificationResult.UserNotFound -> {
