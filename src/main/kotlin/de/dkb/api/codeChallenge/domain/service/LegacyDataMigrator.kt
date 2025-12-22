@@ -18,8 +18,3 @@ interface LegacyDataMigrator {
      */
     fun migrateUserTypes(userId: UserId, legacyTypes: String): Set<CategorySubscription>
 }
-
-/**
- * Exception thrown when migration fails
- */
-class MigrationException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)

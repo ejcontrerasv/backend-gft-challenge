@@ -1,7 +1,7 @@
-package de.dkb.api.codeChallenge.infrastructure.gateway
+package de.dkb.api.codeChallenge.infrastructure.adapter.notification
 
 import de.dkb.api.codeChallenge.domain.model.valueobject.UserId
-import de.dkb.api.codeChallenge.domain.repository.NotificationGateway
+import de.dkb.api.codeChallenge.domain.port.NotificationGateway
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 
@@ -13,7 +13,7 @@ private val logger = KotlinLogging.logger {}
  * In production, this would be replaced with actual push notification service.
  */
 @Component
-class ConsoleNotificationGateway : NotificationGateway {
+class ConsoleNotificationAdapter : NotificationGateway {
 
     override fun sendNotification(userId: UserId, notificationType: String, message: String) {
         val formattedMessage = """
