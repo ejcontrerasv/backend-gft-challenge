@@ -15,7 +15,7 @@ private val logger = KotlinLogging.logger {}
  * Default implementation of LegacyDataMigrator.
  * Converts legacy notification types to category-based subscriptions.
  */
-class DefaultLegacyDataMigrator(private val categoryResolutionService: CategoryResolutionService, private val clock: Clock = Clock.systemUTC()) :
+class DefaultLegacyDataMigrator(private val categoryResolutionService: CategoryResolutionService, private val clock: Clock) :
     LegacyDataMigrator {
 
     override fun migrateUserTypes(userId: UserId, legacyTypes: String): Set<CategorySubscription> {
