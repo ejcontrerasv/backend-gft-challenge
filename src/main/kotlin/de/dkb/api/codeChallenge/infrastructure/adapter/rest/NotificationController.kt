@@ -78,7 +78,7 @@ class NotificationController(private val sendNotificationUseCase: SendNotificati
             }
 
             is NotificationResult.UserNotFound -> {
-                val errorResponse = ApiResponse.error<SendNotificationResponse>(
+                val errorResponse = ApiResponse.error(
                     message = result.message,
                 )
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
