@@ -31,7 +31,7 @@ private val logger = KotlinLogging.logger {}
 class LegacyOnlyReadStrategy(
     private val legacyUserJpaRepository: LegacyUserJpaRepository,
     private val categoryResolutionService: CategoryResolutionService,
-    private val clock: Clock = Clock.systemUTC(),
+    private val clock: Clock,
 ) : UserReadStrategy {
 
     override val type: ReadSource = ReadSource.LEGACY_ONLY
