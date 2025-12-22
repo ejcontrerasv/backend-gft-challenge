@@ -71,7 +71,7 @@ class UserRegistrationController(private val registerUserUseCase: RegisterUserUs
             }
 
             is UserRegistrationResult.Failure -> {
-                val errorResponse = ApiResponse.error<RegisterUserResponse>(
+                val errorResponse = ApiResponse.error(
                     message = "Registration failed",
                     errors = result.errors,
                 )
