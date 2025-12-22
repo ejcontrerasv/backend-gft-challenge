@@ -153,19 +153,19 @@ migration:
 
 # 2. Create legacy-only user
 INSERT INTO users_legacy (id, notifications) 
-VALUES ('legacy-only-user-uuid', 'type3;type4');
+VALUES ('12345678-90ab-cdef-1234-567890abcdef', 'type3;type4');
 
 # 3. Try to send notification (should return 404)
 curl -X POST -H "Content-Type: application/json" \
   localhost:8080/notify \
-  -d '{"userId":"legacy-only-user-uuid","notificationType":"type3","message":"test"}'
+  -d '{"userId":"12345678-90ab-cdef-1234-567890abcdef","notificationType":"type3","message":"test"}'
 # Expected: 404 Not Found
 ```
 
 **Expected Logs:**
 ```
-"Read strategy: NEW_ONLY for user legacy-only-user-uuid"
-"User not found: legacy-only-user-uuid"
+"Read strategy: NEW_ONLY for user 12345678-90ab-cdef-1234-567890abcdef"
+"User not found: 12345678-90ab-cdef-1234-567890abcdef"
 ```
 
 **✅ Key Observations:**
@@ -216,15 +216,14 @@ SELECT 'LEGACY', COUNT(*) FROM users_legacy;
 # 5. Try user that only exists in NEW (should return 404)
 curl -X POST -H "Content-Type: application/json" \
   localhost:8080/notify \
-  -d '{"userId":"new-only-user-uuid","notificationType":"type1","message":"test"}'
+  -d '{"userId":"c3b2a1f0-e9d8-c7b6-a5f4-e3d2c1b0a9f8","notificationType":"type1","message":"test"}'
 # Expected: 404 Not Found
 ```
 
 **Expected Logs:**
 ```
 "Read strategy: LEGACY_ONLY for user ... - no migration will be performed"
-"Converting legacy user ... with types: '...' (no migration)"
-"Legacy user ... converted to X categories (no migration performed)"
+"User not found: c3b2a1f0-e9d8-c7b6-a5f4-e3d2c1b0a9f8"
 ```
 
 **❌ You should NOT see:**
@@ -314,4 +313,233 @@ curl -X POST -H "Content-Type: application/json" \
 ---
 
 **Status**: ✅ Strategy Pattern fully implemented and tested
+
+---
+
+## 🔌 Dual-Write Disabled (`migration.dual-write.enabled=false`)
+
+### What Happens
+
+When `migration.dual-write.enabled=false`, the `DualWriteUserRepositoryAdapter` bean is **not loaded**. Instead, Spring uses the simple `UserRepositoryAdapter` which:
+
+- Reads **only from NEW table** (`user_subscriptions`)
+- Writes **only to NEW table**
+- **No dual-write** to legacy table
+- **No fallback** to legacy table
+- **No migration logic** is executed
+
+### Configuration
+
+```yaml
+migration:
+  dual-write:
+    enabled: false  # ← Disables DualWriteUserRepositoryAdapter
+```
+
+### When to Use
+
+Use this configuration **after migration is 100% complete** and you want to:
+- Remove all migration overhead
+- Simplify the codebase
+- Prepare for removing legacy table
+
+### Behavior Comparison
+
+| Aspect | `dual-write.enabled=true` | `dual-write.enabled=false` |
+|--------|---------------------------|----------------------------|
+| **Bean Loaded** | `DualWriteUserRepositoryAdapter` | `UserRepositoryAdapter` |
+| **Read from** | Strategy-based (NEW/LEGACY) | NEW only |
+| **Write to** | Both NEW and LEGACY | NEW only |
+| **Migration** | Depends on `read-source` | None |
+| **Legacy Table** | Still used | Completely ignored |
+
+### Test Steps
+
+```bash
+# 1. Edit application.yaml
+migration:
+  dual-write:
+    enabled: false
+
+# 2. Restart application
+
+# 3. Register a user
+curl -X POST -H "Content-Type: application/json" \
+  localhost:8080/register \
+  -d '{"id":"0f1e2d3c-4b5a-6f7e-8d9c-0b1a2f3e4d5c","notifications":["type1","type5"]}'
+
+# 4. Verify in database - user should ONLY be in NEW table
+SELECT user_id FROM user_subscriptions WHERE user_id='0f1e2d3c-4b5a-6f7e-8d9c-0b1a2f3e4d5c';
+# Expected: User found
+
+SELECT id FROM users_legacy WHERE id='t0f1e2d3c-4b5a-6f7e-8d9c-0b1a2f3e4d5c';
+# Expected: User NOT found (no dual-write)
+
+# 5. Legacy-only users are NOT accessible
+INSERT INTO users_legacy (id, notifications) VALUES ('550e8400-e29b-41d4-a716-446655440000', 'type1;type2');
+
+curl -X POST -H "Content-Type: application/json" \
+  localhost:8080/notify \
+  -d '{"userId":"550e8400-e29b-41d4-a716-446655440000","notificationType":"type1","message":"test"}'
+# Expected: 404 Not Found
+```
+
+### Expected Logs
+
+```
+# No DualWriteUserRepositoryAdapter logs
+# Only UserRepositoryAdapter logs:
+"Saving user 0f1e2d3c-4b5a-6f7e-8d9c-0b1a2f3e4d5c with 2 subscriptions"
+"Saved user 0f1e2d3c-4b5a-6f7e-8d9c-0b1a2f3e4d5c successfully"
+"Successfully registered user 0f1e2d3c-4b5a-6f7e-8d9c-0b1a2f3e4d5c to 2 categories"
+```
+
+### ⚠️ Warning
+
+Only disable dual-write when:
+1. ✅ 100% of users have been migrated to NEW table
+2. ✅ Verified all users are accessible via NEW table
+3. ✅ Ready to deprecate legacy table
+
+---
+
+## ⏰ Batch Migration Job (`migration.batch-job.enabled=true`)
+
+### What It Does
+
+The batch migration job (`UserSubscriptionMigrationJob`) runs on a schedule to migrate legacy users to the new schema in batches. This is useful for:
+- Migrating large user bases without impacting performance
+- Running during off-peak hours (default: 2 AM daily)
+- Progressing toward 100% migration faster than on-the-fly only
+
+### Configuration
+
+```yaml
+migration:
+  dual-write:
+    enabled: true
+    read-source: NEW_WITH_FALLBACK
+  batch-job:
+    enabled: true          # ← Enable batch migration
+    batch-size: 1000       # Users per batch
+    cron: "0 * * * * ?"    # Run every minute (for testing); default is "0 0 2 * * ?" (2 AM daily)
+```
+
+### Cron Expression Examples
+
+| Expression | Schedule |
+|------------|----------|
+| `0 0 2 * * ?` | Every day at 2:00 AM |
+| `0 0 * * * ?` | Every hour |
+| `0 */30 * * * ?` | Every 30 minutes |
+| `0 0 2 * * SAT,SUN` | Weekends at 2:00 AM |
+
+### How It Works
+
+1. **Finds unmigrated users**: Queries legacy table, filters those not yet in NEW table
+2. **Processes in batches**: Migrates `batch-size` users at a time
+3. **Logs progress**: Shows migrated count, failed count, and percentage
+4. **Skips already migrated**: Doesn't re-migrate users
+
+### Test Steps (Manual Trigger)
+
+Since the cron job runs at scheduled times, for testing you can:
+
+**Option 1: Change cron to run every minute**
+
+```yaml
+migration:
+  batch-job:
+    enabled: true
+    batch-size: 100
+    cron: "0 * * * * ?"  # Every minute (for testing)
+```
+
+```bash
+# 1. Restart application with above config
+
+# 2. Create several legacy-only users
+psql -h localhost -U postgres -d codechallenge_db <<EOF
+INSERT INTO users_legacy (id, notifications) VALUES 
+  ('0f1e2d3c-4b5a-6f7e-8d9c-0b1a2f3e4d5c', 'type1;type2'),
+  ('9a8b7c6d-5e4f-3a2b-1c0d-9f8e7d6c5b4a', 'type3;type4'),
+  ('4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a', 'type1;type5');
+EOF
+
+# 3. run the following query to verify they are not yet migrated
+SELECT l.id
+FROM users_legacy l
+LEFT JOIN user_subscriptions n ON l.id = n.user_id
+WHERE n.user_id IS NULL;
+
+# 4. Wait for the batch job to run (check logs)
+
+# 5. Verify users were migrated
+SELECT l.id
+FROM users_legacy l
+LEFT JOIN user_subscriptions n ON l.id = n.user_id
+WHERE n.user_id IS NULL;
+
+# Expected: All 3 users migrated (no results)
+```
+
+**Option 2: Use Actuator endpoint (if exposed)**
+
+If you have Spring Actuator configured, you could expose a manual trigger endpoint.
+
+### Expected Logs
+
+```
+=== Starting batch migration job ===
+Processing batch 0: 1000 users
+Found 500 users to migrate in this batch
+✓ Migrated user 0f1e2d3c-4b5a-6f7e-8d9c-0b1a2f3e4d5c
+✓ Migrated user 9a8b7c6d-5e4f-3a2b-1c0d-9f8e7d6c5b4a
+✓ Migrated user 4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+Batch 1 completed: 500 migrated, 0 failed so far
+=== Batch migration job completed ===
+Total migrated: 500
+Total failed: 0
+Duration: 2 minutes 15 seconds
+=== Migration Progress ===
+Total legacy users: 10000
+Total migrated: 5500
+Progress: 55%
+```
+
+### Monitoring Progress
+
+The batch job logs migration progress after each run:
+
+```
+=== Migration Progress ===
+Total legacy users: 10000
+Total migrated: 9500
+Progress: 95%
+```
+
+When complete:
+```
+🎉 Migration is 100% complete!
+```
+
+### Recommended Migration Strategy
+
+| Phase | Configuration | Description |
+|-------|---------------|-------------|
+| **1** | `read-source: NEW_WITH_FALLBACK` + `batch-job: false` | On-the-fly migration only |
+| **2** | `read-source: NEW_WITH_FALLBACK` + `batch-job: true` | Add nightly batch migration |
+| **3** | Monitor logs until `Progress: 100%` | Wait for completion |
+| **4** | `read-source: NEW_ONLY` + `batch-job: false` | Disable batch, test NEW only |
+| **5** | `dual-write.enabled: false` | Remove dual-write entirely |
+
+### ⚠️ Important Notes
+
+1. **Batch job requires `dual-write.enabled=true`**: The job uses `MigrateUserSubscriptionsUseCase` which writes to the new table.
+
+2. **Don't run during peak hours**: Default cron is 2 AM to avoid performance impact.
+
+3. **Monitor for failures**: Check logs for `✗ Failed to migrate user` messages.
+
+4. **Batch size tuning**: Start with `1000`, reduce if database performance is affected.
 

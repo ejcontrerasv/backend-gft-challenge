@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://qa-db-server:5432/codechallenge_qa
+    username: qa_user
+    password: qa_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  liquibase:
+    enabled: false
+
+migration:
+  dual-write:
+    enabled: false
+    read-source: NEW_ONLY
+  batch-job:
+    enabled: false
+    batch-size: 2000
+    cron: "0 0 3 * * ?"
+
+logging:
+  level:
+    root: INFO

@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/codechallenge_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-main.yaml
+
+migration:
+  dual-write:
+    enabled: true
+    read-source: LEGACY_ONLY
+  batch-job:
+    enabled: true
+    batch-size: 1000
+    cron: "0 0 2 * * ?"
+
+logging:
+  level:
+    root: DEBUG
