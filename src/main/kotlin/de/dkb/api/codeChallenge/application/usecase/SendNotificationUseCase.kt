@@ -2,7 +2,7 @@ package de.dkb.api.codeChallenge.application.usecase
 
 import de.dkb.api.codeChallenge.application.dto.NotificationResult
 import de.dkb.api.codeChallenge.application.dto.SendNotificationCommand
-import de.dkb.api.codeChallenge.domain.repository.NotificationGateway
+import de.dkb.api.codeChallenge.domain.port.NotificationGateway
 import de.dkb.api.codeChallenge.domain.repository.UserRepository
 import de.dkb.api.codeChallenge.domain.service.CategoryResolutionService
 import mu.KotlinLogging

@@ -1,4 +1,4 @@
-package de.dkb.api.codeChallenge.domain.repository
+package de.dkb.api.codeChallenge.domain.port
 
 import de.dkb.api.codeChallenge.domain.model.valueobject.UserId
 
