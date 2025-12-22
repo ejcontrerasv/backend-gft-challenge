@@ -6,8 +6,8 @@ import de.dkb.api.codeChallenge.application.service.DefaultSubscriptionValidator
 import de.dkb.api.codeChallenge.application.usecase.MigrateUserSubscriptionsUseCase
 import de.dkb.api.codeChallenge.application.usecase.RegisterUserUseCase
 import de.dkb.api.codeChallenge.application.usecase.SendNotificationUseCase
+import de.dkb.api.codeChallenge.domain.port.NotificationGateway
 import de.dkb.api.codeChallenge.domain.repository.CategoryConfigRepository
-import de.dkb.api.codeChallenge.domain.repository.NotificationGateway
 import de.dkb.api.codeChallenge.domain.repository.UserRepository
 import de.dkb.api.codeChallenge.domain.service.CategoryResolutionService
 import de.dkb.api.codeChallenge.domain.service.LegacyDataMigrator

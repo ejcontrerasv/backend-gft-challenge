@@ -4,11 +4,13 @@ import de.dkb.api.codeChallenge.domain.model.CategorySubscription
 import de.dkb.api.codeChallenge.domain.model.User
 import de.dkb.api.codeChallenge.domain.model.valueobject.UserId
 import de.dkb.api.codeChallenge.domain.service.CategoryResolutionService
+import de.dkb.api.codeChallenge.domain.service.LegacyTypeParser
 import de.dkb.api.codeChallenge.infrastructure.config.ReadSource
 import de.dkb.api.codeChallenge.infrastructure.persistence.jpa.entity.LegacyUserEntity
 import de.dkb.api.codeChallenge.infrastructure.persistence.jpa.repository.LegacyUserJpaRepository
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
+import java.time.Clock
 import java.time.Instant
 
 private val logger = KotlinLogging.logger {}
@@ -29,6 +31,7 @@ private val logger = KotlinLogging.logger {}
 class LegacyOnlyReadStrategy(
     private val legacyUserJpaRepository: LegacyUserJpaRepository,
     private val categoryResolutionService: CategoryResolutionService,
+    private val clock: Clock = Clock.systemUTC(),
 ) : UserReadStrategy {
 
     override val type: ReadSource = ReadSource.LEGACY_ONLY
@@ -64,7 +67,7 @@ class LegacyOnlyReadStrategy(
         val legacyTypesString = legacyUser.getNotificationsAsString()
         logger.debug { "Converting legacy user ${legacyUser.id} with types: '$legacyTypesString' (no migration)" }
 
-        val typeCodes = parseLegacyTypes(legacyTypesString)
+        val typeCodes = LegacyTypeParser.parse(legacyTypesString)
 
         if (typeCodes.isEmpty()) {
             logger.warn { "No valid types found for legacy user ${legacyUser.id}" }
@@ -83,7 +86,7 @@ class LegacyOnlyReadStrategy(
         val subscriptions = categories.map { category ->
             CategorySubscription(
                 category = category,
-                subscribedAt = Instant.now(),
+                subscribedAt = Instant.now(clock),
                 active = true,
             )
         }.toSet()
@@ -91,21 +94,5 @@ class LegacyOnlyReadStrategy(
         logger.debug { "Legacy user ${legacyUser.id} converted to ${categories.size} categories (no migration performed)" }
 
         return User(id = UserId(legacyUser.id), subscriptions = subscriptions)
-    }
-
-    private fun parseLegacyTypes(legacyTypes: String): Set<String> {
-        if (legacyTypes.isBlank()) {
-            return emptySet()
-        }
-
-        return legacyTypes
-            .split(TYPE_SEPARATOR)
-            .map { it.trim().lowercase() }
-            .filter { it.isNotEmpty() }
-            .toSet()
-    }
-
-    companion object {
-        private const val TYPE_SEPARATOR = ";"
     }
 }

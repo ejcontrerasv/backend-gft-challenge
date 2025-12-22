@@ -22,7 +22,7 @@ spring:
 migration:
   dual-write:
     enabled: true
-    read-source: LEGACY_ONLY  # Options: NEW_WITH_FALLBACK, NEW_ONLY, LEGACY_ONLYapplication.yaml
+    read-source: LEGACY_ONLY  # Options: NEW_WITH_FALLBACK, NEW_ONLY, LEGACY_ONLY
   batch-job:
     enabled: false  # Set to true to enable nightly batch migration
     batch-size: 1000

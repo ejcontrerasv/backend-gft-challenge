@@ -13,12 +13,17 @@ sealed class ApiResponse<out T> {
         val message: String? = null,
     ) : ApiResponse<T>()
 
-    data class Error(
+    data class Error<T>(
         @field:Schema(description = "Error message", example = "Validation failed")
         val message: String,
         @field:Schema(description = "List of validation errors", example = "['Field A is required']")
         val errors: List<String> = emptyList(),
-    ) : ApiResponse<Nothing>()
+    ) : ApiResponse<T>()
+
+    companion object {
+        fun <T> success(data: T, message: String? = null): ApiResponse<T> = Success(data, message)
+        fun <T> error(message: String, errors: List<String> = emptyList()): ApiResponse<T> = Error(message, errors)
+    }
 }
 
 /**

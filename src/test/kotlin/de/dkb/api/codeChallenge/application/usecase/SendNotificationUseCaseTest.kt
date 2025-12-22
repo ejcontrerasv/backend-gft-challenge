@@ -8,7 +8,7 @@ import de.dkb.api.codeChallenge.domain.model.NotificationType
 import de.dkb.api.codeChallenge.domain.model.User
 import de.dkb.api.codeChallenge.domain.model.valueobject.CategoryId
 import de.dkb.api.codeChallenge.domain.model.valueobject.UserId
-import de.dkb.api.codeChallenge.domain.repository.NotificationGateway
+import de.dkb.api.codeChallenge.domain.port.NotificationGateway
 import de.dkb.api.codeChallenge.domain.repository.UserRepository
 import de.dkb.api.codeChallenge.domain.service.CategoryResolutionService
 import io.mockk.every
