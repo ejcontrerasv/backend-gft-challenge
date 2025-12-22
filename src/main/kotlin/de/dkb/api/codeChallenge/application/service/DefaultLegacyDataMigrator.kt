@@ -4,21 +4,24 @@ import de.dkb.api.codeChallenge.domain.model.CategorySubscription
 import de.dkb.api.codeChallenge.domain.model.valueobject.UserId
 import de.dkb.api.codeChallenge.domain.service.CategoryResolutionService
 import de.dkb.api.codeChallenge.domain.service.LegacyDataMigrator
+import de.dkb.api.codeChallenge.domain.service.LegacyTypeParser
 import mu.KotlinLogging
+import java.time.Clock
 import java.time.Instant
 
 private val logger = KotlinLogging.logger {}
 
-class DefaultLegacyDataMigrator(private val categoryResolutionService: CategoryResolutionService) : LegacyDataMigrator {
-
-    companion object {
-        private const val TYPE_SEPARATOR = ";"
-    }
+/**
+ * Default implementation of LegacyDataMigrator.
+ * Converts legacy notification types to category-based subscriptions.
+ */
+class DefaultLegacyDataMigrator(private val categoryResolutionService: CategoryResolutionService, private val clock: Clock = Clock.systemUTC()) :
+    LegacyDataMigrator {
 
     override fun migrateUserTypes(userId: UserId, legacyTypes: String): Set<CategorySubscription> {
         logger.info { "Migrating user ${userId.value}: '$legacyTypes'" }
 
-        val typeCodes = parseLegacyTypes(legacyTypes)
+        val typeCodes = LegacyTypeParser.parse(legacyTypes)
 
         if (typeCodes.isEmpty()) {
             logger.warn { "No valid types found for user ${userId.value}" }
@@ -35,7 +38,7 @@ class DefaultLegacyDataMigrator(private val categoryResolutionService: CategoryR
         val subscriptions = categories.map { category ->
             CategorySubscription(
                 category = category,
-                subscribedAt = Instant.now(),
+                subscribedAt = Instant.now(clock),
                 active = true,
             )
         }.toSet()
@@ -43,17 +46,5 @@ class DefaultLegacyDataMigrator(private val categoryResolutionService: CategoryR
         logger.info { "Successfully migrated user ${userId.value}: ${typeCodes.size} types -> ${categories.size} categories" }
 
         return subscriptions
-    }
-
-    private fun parseLegacyTypes(legacyTypes: String): Set<String> {
-        if (legacyTypes.isBlank()) {
-            return emptySet()
-        }
-
-        return legacyTypes
-            .split(TYPE_SEPARATOR)
-            .map { it.trim().lowercase() }
-            .filter { it.isNotEmpty() }
-            .toSet()
     }
 }
