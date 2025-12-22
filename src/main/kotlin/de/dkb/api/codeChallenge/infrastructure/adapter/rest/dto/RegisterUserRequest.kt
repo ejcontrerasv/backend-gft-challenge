@@ -19,5 +19,5 @@ data class RegisterUserRequest(
     @field:NotEmpty(message = "Notifications list cannot be empty")
     @field:Size(min = 1, max = 20, message = "Notifications must contain between 1 and 20 items")
     @field:Schema(description = "List of notification types to subscribe", example = "[\"type1\", \"type2\", \"type3\"]")
-    val notifications: List<String>,
+    val notifications: List<@field:Size(min = 1, message = "Notification type cannot be empty") String>,
 )
