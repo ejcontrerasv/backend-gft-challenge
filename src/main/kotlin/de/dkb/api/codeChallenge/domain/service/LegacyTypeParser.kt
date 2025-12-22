@@ -1,7 +1,7 @@
 package de.dkb.api.codeChallenge.domain.service
 
 /**
- * Utility object for parsing legacy notification type strings.
+ * Parser object for parsing legacy notification type strings.
  * Centralizes the parsing logic to avoid code duplication.
  */
 object LegacyTypeParser {
